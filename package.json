@@ -11,7 +11,8 @@
     "install-script": "python3 runners/install.py --name LiveRemote",
     "watch-live-logs": "python3 runners/watch.py --user 'isaacpoole' --version 'Live 11.3.21'",
     "close-set": "pkill -x Ableton Live 11 Suite",
-    "open-set": "open set/set.als"
+    "open-set": "open set/set.als",
+    "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/vite.svg"
   },
   "dependencies": {
     "@tamagui/config": "^1.65.0",
@@ -27,11 +28,13 @@
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
+    "@vite-pwa/assets-generator": "^0.2.3",
     "@vitejs/plugin-react-swc": "^3.3.2",
     "eslint": "^8.45.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "vite": "^4.4.5",
+    "vite-plugin-pwa": "^0.17.5"
   }
 }
