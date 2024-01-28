@@ -4,9 +4,14 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
+    "reload": "bun run install-script && bun run close-set && bun run open-set",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "install-script": "python3 runners/install.py --name LiveRemote",
+    "watch-live-logs": "python3 runners/watch.py --version 'Live 11.1.20'",
+    "close-set": "pkill -x Ableton Live 11 Suite",
+    "open-set": "open set/oscdevset.als"
   },
   "dependencies": {
     "@tamagui/config": "^1.65.0",

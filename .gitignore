@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Ableton Live artifacts 
+/set
+/Live
+/_Framework
+/_Generic
