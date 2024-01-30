@@ -19,7 +19,7 @@ export interface UseFindSocketsOptions {
 }
 
 export const useFindSockets = (
-  port: number = 9001,
+  port = 9001,
   {
     base = "192.168.1",
     low = 0,
@@ -82,7 +82,7 @@ export const useFindSockets = (
 
     const done = () => {
       if (index.current > high) {
-        onResult && onResult(sockets);
+        onResult?.(sockets);
         loading.current = false;
       }
     };

@@ -7,7 +7,7 @@ settings:
 dependencies:
   '@reduxjs/toolkit':
     specifier: ^2.1.0
-    version: 2.1.0(react@18.2.0)
+    version: 2.1.0(react-redux@9.1.0)(react@18.2.0)
   '@tamagui/config':
     specifier: ^1.88.17
     version: 1.88.17(react-dom@18.2.0)(react-native-reanimated@3.6.2)(react-native@0.73.3)(react@18.2.0)
@@ -23,6 +23,9 @@ dependencies:
   react-dom:
     specifier: ^18.2.0
     version: 18.2.0(react@18.2.0)
+  react-redux:
+    specifier: ^9.1.0
+    version: 9.1.0(@types/react@18.2.48)(react-native@0.73.3)(react@18.2.0)(redux@5.0.1)
   tamagui:
     specifier: ^1.88.17
     version: 1.88.17(@types/react@18.2.48)(react-dom@18.2.0)(react-native-web@0.19.10)(react-native@0.73.3)(react@18.2.0)
@@ -2328,7 +2331,7 @@ packages:
       react-native: 0.73.3(@babel/core@7.23.9)(@babel/preset-env@7.23.9)(react@18.2.0)
     dev: false
 
-  /@reduxjs/toolkit@2.1.0(react@18.2.0):
+  /@reduxjs/toolkit@2.1.0(react-redux@9.1.0)(react@18.2.0):
     resolution: {integrity: sha512-nfJ/b4ZhzUevQ1ZPKjlDL6CMYxO4o7ZL7OSsvSOxzT/EN11LsBDgTqP7aedHtBrFSVoK7oTP1SbMWUwGb30NLg==}
     peerDependencies:
       react: ^16.9.0 || ^17.0.0 || ^18
@@ -2341,6 +2344,7 @@ packages:
     dependencies:
       immer: 10.0.3
       react: 18.2.0
+      react-redux: 9.1.0(@types/react@18.2.48)(react-native@0.73.3)(react@18.2.0)(redux@5.0.1)
       redux: 5.0.1
       redux-thunk: 3.1.0(redux@5.0.1)
       reselect: 5.1.0
@@ -3975,6 +3979,10 @@ packages:
   /@types/trusted-types@2.0.7:
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
     dev: true
+
+  /@types/use-sync-external-store@0.0.3:
+    resolution: {integrity: sha512-EwmlvuaxPNej9+T4v5AuBPJa2x2UOJVdjCtDHgcDqitUeOtjnJKJ+apYjVcAoBEMjKW1VVFGZLUb5+qqa09XFA==}
+    dev: false
 
   /@types/yargs-parser@21.0.3:
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
@@ -7489,6 +7497,29 @@ packages:
       - encoding
       - supports-color
       - utf-8-validate
+    dev: false
+
+  /react-redux@9.1.0(@types/react@18.2.48)(react-native@0.73.3)(react@18.2.0)(redux@5.0.1):
+    resolution: {integrity: sha512-6qoDzIO+gbrza8h3hjMA9aq4nwVFCKFtY2iLxCtVT38Swyy2C/dJCGBXHeHLtx6qlg/8qzc2MrhOeduf5K32wQ==}
+    peerDependencies:
+      '@types/react': ^18.2.25
+      react: ^18.0
+      react-native: '>=0.69'
+      redux: ^5.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      react-native:
+        optional: true
+      redux:
+        optional: true
+    dependencies:
+      '@types/react': 18.2.48
+      '@types/use-sync-external-store': 0.0.3
+      react: 18.2.0
+      react-native: 0.73.3(@babel/core@7.23.9)(@babel/preset-env@7.23.9)(react@18.2.0)
+      redux: 5.0.1
+      use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
   /react-refresh@0.14.0:
