@@ -25,6 +25,8 @@ export default defineConfig({
         short_name: "LiveRemote",
         description: "My Awesome App description",
         theme_color: "#ffffff",
+        background_color: "#2f3d58",
+        display: "minimal-ui",
         icons: [
           {
             src: "pwa-64x64.png",
