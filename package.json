@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite --host",
     "reload": "bun run install-script && bun run close-set && bun run open-set",
-    "build": "tsc && vite build",
+    "build": "set \"VITE_CJS_TRACE=true\" && tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "install-script": "python3 runners/install.py --name LiveRemote",
@@ -15,26 +15,27 @@
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/vite.svg"
   },
   "dependencies": {
-    "@tamagui/config": "^1.65.0",
-    "@tamagui/vite-plugin": "^1.65.0",
-    "@tamagui/web": "^1.65.0",
+    "@reduxjs/toolkit": "^2.1.0",
+    "@tamagui/config": "^1.88.17",
+    "@tamagui/vite-plugin": "^1.88.17",
+    "@tamagui/web": "^1.88.17",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "tamagui": "^1.65.0"
+    "tamagui": "^1.88.17"
   },
   "devDependencies": {
     "@biomejs/biome": "1.2.0",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
-    "@typescript-eslint/parser": "^6.0.0",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
     "@vite-pwa/assets-generator": "^0.2.3",
-    "@vitejs/plugin-react-swc": "^3.3.2",
-    "eslint": "^8.45.0",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.3",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12",
     "vite-plugin-pwa": "^0.17.5"
   }
 }

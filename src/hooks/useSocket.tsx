@@ -31,12 +31,14 @@ export const useSocket = ({
       if (socket.current) {
         socket.current.onopen = () => {
           setConnected(true);
-          onConnect && onConnect();
+          onConnect?.();
         };
+
         socket.current.onclose = () => {
           setConnected(false);
-          onDisconnect && onDisconnect();
+          onDisconnect?.();
         };
+
         socket.current.onmessage = (e) => {
           const message = JSON.parse(e.data) as IncomingMessage;
           if (message.method === Method.AUTH) {
@@ -48,10 +50,11 @@ export const useSocket = ({
               }
             }
           }
-          onMessage && onMessage(message);
+          onMessage?.(message);
         };
+
         socket.current.onerror = (e) => {
-          onError && onError(e);
+          onError?.(e);
         };
       }
     },
