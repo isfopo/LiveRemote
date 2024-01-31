@@ -23,8 +23,7 @@ class LiveRemote(ControlSurface):
             self.server.set_fn_new_client(self.handler.on_connection)
             self.server.set_fn_client_left(self.handler.on_disconnect)
 
-            self.preferences = Preferences(os.path.dirname(os.path.realpath(__file__))
-                                           )
+            self.preferences = Preferences(os.path.dirname(os.path.realpath(__file__)))
 
             self.server.run(threaded=True)
 

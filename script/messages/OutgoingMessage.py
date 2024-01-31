@@ -11,7 +11,7 @@ class OutgoingMessage:
 
     Attributes:
         client: the client that sent the message.
-        method (Method): action to take. 
+        method (Method): action to take.
             Options:
                 CALL: calls a method on object.
                 GET: request for the value of a given property.
@@ -23,7 +23,14 @@ class OutgoingMessage:
         result (str, int, float, bool, None): product of call
     """
 
-    def __init__(self, status: Status, method: Method, address: str, prop: str, result: Union[str, int, float, bool, None] = None) -> None:
+    def __init__(
+        self,
+        status: Status,
+        method: Method,
+        address: str,
+        prop: str,
+        result: Union[str, int, float, bool, None] = None,
+    ) -> None:
         self.status = status
         self.method = method
         self.address = address
@@ -32,10 +39,12 @@ class OutgoingMessage:
 
     @property
     def data(self):
-        return json.dumps({
-            "status": self.status.value,
-            "method": self.method.value,
-            "address": self.address,
-            "prop": self.prop,
-            "result": self.result
-        })
+        return json.dumps(
+            {
+                "status": self.status.value,
+                "method": self.method.value,
+                "address": self.address,
+                "prop": self.prop,
+                "result": self.result,
+            }
+        )

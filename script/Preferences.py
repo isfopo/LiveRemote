@@ -1,14 +1,12 @@
 import os
 import shelve
 
-DEFAULTS = {
-    "requireCode": True
-}
+DEFAULTS = {"requireCode": True}
 
 
-class Preferences():
+class Preferences:
     def __init__(self, dir: str) -> None:
-        self._d = shelve.open(os.path.join(dir, ".preferences"), 'c')
+        self._d = shelve.open(os.path.join(dir, ".preferences"), "c")
 
     def get(self, key: str):
         try:
