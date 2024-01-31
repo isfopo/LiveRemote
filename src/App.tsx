@@ -1,27 +1,16 @@
-import { useEffect, useState } from "react";
-import { Button, Text } from "tamagui";
-import { useDispatch, useSelector } from "react-redux";
+import { Text } from "tamagui";
+import { useSocket } from "./hooks/useSocket";
 import "./App.css";
-import { AppDispatch } from "./store/store";
-import { findSocket } from "./store/socket/slice";
-import { RootState } from "./store/reducers";
 
 function App() {
-  const dispatch = useDispatch<AppDispatch>();
-
-  const { candidates } = useSelector((state: RootState) => state.socket);
-
-  const [count, setCount] = useState<number>(0);
-
-  useEffect(() => {
-    dispatch(findSocket({ port: 9001 }));
-  }, []);
+  const { candidates, loading } = useSocket();
 
   return (
     <>
-      <Text>Vite + Tamagui</Text>
+      <Text>LiveRemote</Text>
+      <Text>{loading ? "searching" : ""}</Text>
       {candidates.map((c) => (
-        <Text>{c.url}</Text>
+        <Text>{c.hostName}</Text>
       ))}
     </>
   );

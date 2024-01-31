@@ -2,6 +2,7 @@ export interface SocketState {
   code: string | null;
   candidates: WebSocket[];
   socket: WebSocket | null;
+  searching: boolean;
 }
 
 export interface FindPayload {
