@@ -1,58 +1,35 @@
 from __future__ import with_statement
 
-import Live
+import os
 from _Framework.ControlSurface import ControlSurface
-from .helpers.version import get_version
-from .handlers.SongHandler import SongHandler
-from .handlers.MasterTrackHandler import MasterTrackHandler
-
-from .OscServer import OscServer
-from .handlers.TrackHandler import TrackHandler
-from .handlers.ReturnTrackHandler import ReturnTrackHandler
+from .handlers import Handler
+from .websocket_server import WebsocketServer
+from .helpers.network import get_ip
+from .Preferences import Preferences
 
 
 class LiveRemote(ControlSurface):
+    # running on 3.7.0 checked 11.2
     __module__ = __name__
-    __doc__ = "Remote script for the LiveRemote App"
+    __doc__ = "Remote script to start an instance of the LiveRemote server"
 
     def __init__(self, c_instance):
         ControlSurface.__init__(self, c_instance)
-        self.__version__ = get_version()
-        self._live = Live.Application.get_application()
-        self.song = self._live.get_document()
-        self.handlers = []
-        self.api_is_on = False
+        with self.component_guard():
+            self.server = WebsocketServer(host=get_ip(), port=9001)
+            self.handler = Handler(self)
 
-        self.server = OscServer(self)
-        self.schedule_message(0, self.tick)
+            self.server.set_fn_message_received(self.handler.incoming_message)
+            self.server.set_fn_new_client(self.handler.on_connection)
+            self.server.set_fn_client_left(self.handler.on_disconnect)
 
-    def init_api(self):
-        if not self.api_is_on:
-            self.api_is_on = True
-            with self.component_guard():
-                self.handlers = [
-                    SongHandler(self, "song"),
-                    ReturnTrackHandler(self, "return_track"),
-                    MasterTrackHandler(self, "master_track"),
-                    TrackHandler(self, "track"),
-                ]
+            self.preferences = Preferences(os.path.dirname(os.path.realpath(__file__))
+                                           )
 
-    def tick(self):
-        """
-        Called once per "tick".
-        """
-        try:
-            self.server.process()
-        except Exception as e:
-            self.disconnect()
-            raise e
+            self.server.run(threaded=True)
 
-        self.schedule_message(1, self.tick)
-
-    def disconnect(self) -> None:
-        """
-        Clean up on disconnect
-        """
-        self.server.shutdown()
+    def disconnect(self):
+        """clean up on disconnect"""
+        self.server.shutdown_gracefully()
         ControlSurface.disconnect(self)
         return None
