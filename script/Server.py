@@ -137,15 +137,14 @@ class Server(threading.Thread):
             return None
 
     def send(self, client_id: int, payload: dict) -> None:
-        # Convert the payload object to a JSON string
-        payload_json = json.dumps(payload)
-
         conn = self.clients.get(client_id)
 
         if conn:
             # Send the header and payload through the socket connection
             conn.sendall(
-                self.create_websocket_header(payload_json.encode("utf-8"))
+                self.create_websocket_header(
+                    json.dumps(payload).encode("utf-8")
+                )
             )
 
     def create_websocket_header(self, payload):
