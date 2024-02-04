@@ -36,6 +36,13 @@ class Server(threading.Thread):
         while True:
             conn, addr = sock.accept()
 
+            client_thread = threading.Thread(
+                target=self.handle_client, args=(conn, addr)
+            )
+            client_thread.start()
+
+    def handle_client(self, conn, addr):
+        try:
             data = conn.recv(1024)
             headers = self.parse_headers(data)
 
@@ -93,8 +100,14 @@ class Server(threading.Thread):
                 if self.on_message:
                     self.on_message(client_id, payload)
 
-            if self.on_disconnect:
-                self.on_disconnect(self.addr)
+        except (ConnectionResetError, BrokenPipeError):
+            self.handle_disconnect(client_id)
+
+    def handle_disconnect(self, client_id):
+        if self.on_disconnect:
+            self.on_disconnect(client_id)
+
+        del self.clients[client_id]
 
     def assign_client_id_and_connect(self, conn):
         client_id = self._client_code_counter
