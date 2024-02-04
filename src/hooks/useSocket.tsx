@@ -6,12 +6,10 @@ import {
   Status,
   OutgoingMessage,
   SendOptions,
+  SocketHost,
 } from "../store/socket/types";
-
-export interface SocketHost {
-  url: string;
-  hostName: string;
-}
+import { useAppDispatch } from "./useAppDispatch";
+import { connect as connectState } from "../store/socket/slice";
 
 export interface UseSocketOptions {
   onConnect?: () => void;
@@ -39,6 +37,8 @@ export const useSocket = ({
   timeout = 2000,
   lazyLoad = false,
 }: UseSocketOptions = {}) => {
+  const dispatch = useAppDispatch();
+
   const index = useRef<number>(low);
   const [candidates, setCandidates] = useState<SocketHost[]>([]);
   const loading = useRef<boolean>(true);
@@ -78,7 +78,11 @@ export const useSocket = ({
                 socket
                   ? [
                       ...s,
-                      { url: socket.url, hostName: message.result as string },
+                      {
+                        url: socket.url,
+                        hostName: message.result as string,
+                        socket,
+                      },
                     ]
                   : s
               );
@@ -116,20 +120,19 @@ export const useSocket = ({
   }, [find]);
 
   const connect = useCallback(
-    (url: string) => {
-      socket.current = new WebSocket(url);
-      if (socket.current) {
-        socket.current.onopen = () => {
+    (host: SocketHost) => {
+      if (host.socket.OPEN) {
+        host.socket.onopen = () => {
           setConnected(true);
           onConnect?.();
         };
 
-        socket.current.onclose = () => {
+        host.socket.onclose = () => {
           setConnected(false);
           onDisconnect?.();
         };
 
-        socket.current.onmessage = (e) => {
+        host.socket.onmessage = (e) => {
           const message = JSON.parse(e.data) as IncomingMessage;
           if (message.method === Method.AUTH) {
             if (message.address === "/code" && message.prop === "check") {
@@ -143,7 +146,7 @@ export const useSocket = ({
           onMessage?.(message);
         };
 
-        socket.current.onerror = (e) => {
+        host.socket.onerror = (e) => {
           onError?.(e);
         };
       }

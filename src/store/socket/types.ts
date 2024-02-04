@@ -1,8 +1,12 @@
 export interface SocketState {
   code: string | null;
-  candidates: WebSocket[];
-  socket: WebSocket | null;
-  searching: boolean;
+  host: SocketHost | null;
+}
+
+export interface SocketHost {
+  url: string;
+  hostName: string;
+  socket: WebSocket;
 }
 
 export interface FindPayload {
@@ -16,7 +20,7 @@ export interface FindPayload {
 }
 
 export interface ConnectPayload {
-  url: string;
+  host: SocketHost;
 }
 
 export enum Method {
