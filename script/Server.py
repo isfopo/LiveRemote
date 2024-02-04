@@ -13,5 +13,5 @@ class Server(threading.Thread):
         self.handler = handler
 
     def run(self):
-        with HTTPServer(("localhost", self.port), self.handler) as httpd:
+        with HTTPServer(("0.0.0.0", self.port), self.handler) as httpd:
             httpd.serve_forever()
