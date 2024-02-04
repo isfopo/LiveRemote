@@ -1,14 +1,15 @@
 from typing import List
 from _Framework.ControlSurface import ControlSurface
-from ..helpers.host import get_hostname
+from .Server import Server
+from .helpers.host import get_hostname
 from .ClientCodes import ClientCodes
-from ..messages.Status import Status
-from ..helpers.lists import first
+from .messages.Status import Status
+from .helpers.lists import first
 from .Listener import Listener
-from ..messages.OutgoingMessage import OutgoingMessage
+from .messages.OutgoingMessage import OutgoingMessage
 
-from ..messages.IncomingMessage import IncomingMessage
-from ..messages.Method import Method
+from .messages.IncomingMessage import IncomingMessage
+from .messages.Method import Method
 import json
 
 
@@ -17,8 +18,9 @@ class Handler:
     A class to handle incoming and outgoing messages to a LiveRemote client
     """
 
-    def __init__(self, control_surface: ControlSurface):
+    def __init__(self, control_surface: ControlSurface, server: Server):
         self.control_surface = control_surface
+        self.server = server
         self.listeners: List[Listener] = []
         self.live = self.control_surface.application()
         self.song = self.control_surface.song()
@@ -27,7 +29,7 @@ class Handler:
     def __getitem__(self, key):
         return getattr(self, key)
 
-    def on_connection(self, client, server):
+    def on_connection(self, client):
         """
         Called for every client connecting (after handshake)
         """
@@ -36,7 +38,7 @@ class Handler:
         )
         self.client_codes.new(client["id"])
 
-        server.send_message(
+        self.server.send_message(
             client,
             OutgoingMessage(
                 Status.SUCCESS,
@@ -47,7 +49,7 @@ class Handler:
             ).data,
         )
 
-    def on_disconnect(self, client, server):
+    def on_disconnect(self, client):
         """
         Called for every client disconnecting
         """
@@ -63,8 +65,8 @@ class Handler:
 
         self.control_surface.log_message("Client(%d) disconnected" % client["id"])
 
-    def incoming_message(self, client, server, data: str):
-        message = IncomingMessage(client, data)
+    def on_message(self, client, payload: str):
+        message = IncomingMessage(client, payload)
         self.control_surface.log_message(message.data)
 
         if message.method == Method.AUTH:
@@ -76,7 +78,7 @@ class Handler:
 
             if message.address == "/code" and message.prop == "check":
                 if self.client_codes.validate(client["id"], message.code):
-                    server.send_message(
+                    self.server.send_message(
                         client,
                         OutgoingMessage(
                             Status.SUCCESS,
@@ -87,7 +89,7 @@ class Handler:
                         ).data,
                     )
                 else:
-                    server.send_message(
+                    self.server.send_message(
                         client,
                         OutgoingMessage(
                             Status.FAILURE,
@@ -109,7 +111,7 @@ class Handler:
                 value = getattr(self.locate(message.address), message.prop)
 
             if value is not None:
-                server.send_message(
+                self.server.send_message(
                     client,
                     OutgoingMessage(
                         Status.SUCCESS,
@@ -139,7 +141,7 @@ class Handler:
 
                     if result is not None:
                         try:
-                            server.send_message(
+                            self.server.send_message(
                                 client,
                                 (
                                     OutgoingMessage(
@@ -152,7 +154,7 @@ class Handler:
                                 ).data,
                             )
                         except BrokenPipeError:
-                            server.send_message(
+                            self.server.send_message(
                                 client,
                                 (
                                     OutgoingMessage(
@@ -178,7 +180,7 @@ class Handler:
                     callback()
 
                 except Exception as error:
-                    server.send_message(
+                    self.server.send_message(
                         client,
                         (
                             OutgoingMessage(
@@ -192,7 +194,7 @@ class Handler:
                     )
                     return
             else:
-                server.send_message(
+                self.server.send_message(
                     client,
                     (
                         OutgoingMessage(
@@ -222,7 +224,7 @@ class Handler:
                 )
 
                 self.listeners.remove(listener)
-            server.send_message(
+            self.server.send_message(
                 client,
                 (
                     OutgoingMessage(
@@ -236,7 +238,7 @@ class Handler:
             self.control_surface.preferences.get("requireCode") is True
             and self.client_codes.validate(client["id"], message.code) is False
         ):
-            server.send_message(
+            self.server.send_message(
                 client,
                 OutgoingMessage(
                     Status.FAILURE,
@@ -257,7 +259,7 @@ class Handler:
                 else:
                     result = getattr(self.locate(message.address), message.prop)()
 
-                server.send_message(
+                self.server.send_message(
                     client,
                     OutgoingMessage(
                         Status.SUCCESS,
@@ -268,7 +270,7 @@ class Handler:
                     ).data,
                 )
             except Exception as error:
-                server.send_message(
+                self.server.send_message(
                     client,
                     OutgoingMessage(
                         Status.FAILURE,
@@ -292,7 +294,7 @@ class Handler:
                             self.locate(message.address), message.prop, message.value
                         )
 
-                    server.send_message(
+                    self.server.send_message(
                         client,
                         OutgoingMessage(
                             Status.SUCCESS,
@@ -305,7 +307,7 @@ class Handler:
                     return
 
                 except Exception as error:
-                    server.send_message(
+                    self.server.send_message(
                         client,
                         OutgoingMessage(
                             Status.FAILURE,
@@ -318,7 +320,7 @@ class Handler:
                     return
 
             else:
-                server.send_message(
+                self.server.send_message(
                     client,
                     OutgoingMessage(
                         Status.FAILURE,

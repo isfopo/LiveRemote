@@ -9,7 +9,7 @@ class ClientCodes:
 
     _map: Dict[str, int] = {}
 
-    def new(self, clientId: str):
+    def new(self, clientId):
         self._map[clientId] = Live.Application.get_random_int(  # type: ignore
             100000, 999999
         )

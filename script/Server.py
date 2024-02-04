@@ -1,4 +1,3 @@
-import os
 import socket
 import threading
 import json
@@ -11,10 +10,21 @@ PORT = 8000
 
 
 class Server(threading.Thread):
-    def __init__(self, control_surface: ControlSurface, port=PORT):
+    def __init__(
+        self,
+        control_surface: ControlSurface,
+        port=PORT,
+        on_connect=None,
+        on_message=None,
+        on_disconnect=None,
+    ):
         super().__init__()
         self.port = port
         self.control_surface = control_surface
+        self.on_connect = on_connect
+        self.on_message = on_message
+        self.on_disconnect = on_disconnect
+        self._is_running = True
 
     def run(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,6 +34,9 @@ class Server(threading.Thread):
         while True:
             self.conn, self.addr = sock.accept()
             print("Connected by", self.addr)
+
+            if self.on_connect:
+                self.on_connect(self.addr)
 
             data = self.conn.recv(1024)
             headers = self.parse_headers(data)
@@ -36,7 +49,7 @@ class Server(threading.Thread):
             self.conn.sendall(handshake_response.encode())
 
             # Handle WebSocket frames
-            while True:
+            while self._is_running:
                 frame = self.conn.recv(2)
                 if not frame:
                     break
@@ -75,10 +88,11 @@ class Server(threading.Thread):
                 # Parse payload_data to object
                 payload = self.parse_payload_to_object(payload_data)
 
-                self.control_surface.log_message(payload["hi"])
+                if self.on_message:
+                    self.on_message(payload)
 
-                # Send a response back to the client
-                self.send(payload)
+            if self.on_disconnect:
+                self.on_disconnect(self.addr)
 
     def parse_headers(self, data):
         headers = {}
@@ -134,3 +148,7 @@ class Server(threading.Thread):
             header.extend(struct.pack("!Q", payload_length))
 
         return header + payload
+
+    def shutdown(self):
+        self._is_running = False
+        self.conn.close()
