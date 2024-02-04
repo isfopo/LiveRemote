@@ -1,17 +1,22 @@
 from __future__ import with_statement
 from http.server import HTTPServer
 import threading
-from . import RequestHandler
+
+from _Framework import ControlSurface
+from .RequestHandler import RequestHandler
 
 PORT = 8000
 
 
 class Server(threading.Thread):
-    def __init__(self, handler: RequestHandler, port=PORT):
+    def __init__(self, control_surface: ControlSurface, port=PORT):
         super().__init__()
         self.port = port
-        self.handler = handler
+        self.control_surface = control_surface
 
     def run(self):
-        with HTTPServer(("0.0.0.0", self.port), self.handler) as httpd:
+        def handler(*args, **kwargs):
+            return RequestHandler(*args, control_surface=self.control_surface, **kwargs)
+
+        with HTTPServer(("0.0.0.0", self.port), handler) as httpd:
             httpd.serve_forever()
