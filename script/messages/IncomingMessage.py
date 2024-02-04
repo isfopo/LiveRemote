@@ -1,4 +1,3 @@
-import json
 from .Method import Method
 
 
@@ -26,7 +25,7 @@ class IncomingMessage:
         self.obj = obj
         try:
             self.code: int = int(self.obj["code"])
-        except:
+        except (ValueError, KeyError):
             self.code = 0
         self.method: Method = Method(self.obj["method"])
         self.address: str = self.obj["address"]
@@ -46,5 +45,5 @@ class IncomingMessage:
                 return str(self.obj["value"])
             else:
                 return None
-        except:
+        except KeyError:
             return None
