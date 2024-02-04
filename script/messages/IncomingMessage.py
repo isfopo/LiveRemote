@@ -21,10 +21,9 @@ class IncomingMessage:
         type (str): type of value
     """
 
-    def __init__(self, client, data: str):
+    def __init__(self, client, obj):
         self.client = client
-        self.obj = json.loads(data)
-        self.data: str = data
+        self.obj = obj
         try:
             self.code: int = int(self.obj["code"])
         except:

@@ -46,7 +46,7 @@ class Server(threading.Thread):
 
             conn.sendall(handshake_response.encode())
 
-            self.assign_client_id_and_connect(conn)
+            client_id = self.assign_client_id_and_connect(conn)
 
             # Handle WebSocket frames
             while self._is_running:
@@ -89,7 +89,7 @@ class Server(threading.Thread):
                 payload = self.parse_payload_to_object(payload_data)
 
                 if self.on_message:
-                    self.on_message(payload)
+                    self.on_message(client_id, payload)
 
             if self.on_disconnect:
                 self.on_disconnect(self.addr)
@@ -102,6 +102,8 @@ class Server(threading.Thread):
             self.on_connect(client_id)
 
         self._client_code_counter += 1
+
+        return client_id
 
     def parse_headers(self, data):
         headers = {}
