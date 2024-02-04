@@ -11,8 +11,8 @@ class LiveRemote(ControlSurface):
     def __init__(self, c_instance):
         ControlSurface.__init__(self, c_instance)
         with self.component_guard():
-            self.server = Server(c_instance)
-            self.handler = Handler(c_instance, server=self.server)
+            self.server = Server(self)
+            self.handler = Handler(self, server=self.server)
 
             self.server.on_connect = self.handler.on_connection
             self.server.on_message = self.handler.on_message

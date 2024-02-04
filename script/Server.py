@@ -21,10 +21,12 @@ class Server(threading.Thread):
         super().__init__()
         self.port = port
         self.control_surface = control_surface
+        self.clients = {}
         self.on_connect = on_connect
         self.on_message = on_message
         self.on_disconnect = on_disconnect
         self._is_running = True
+        self._client_code_counter = 0
 
     def run(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -32,13 +34,9 @@ class Server(threading.Thread):
         sock.listen(1)
 
         while True:
-            self.conn, self.addr = sock.accept()
-            print("Connected by", self.addr)
+            conn, addr = sock.accept()
 
-            if self.on_connect:
-                self.on_connect(self.addr)
-
-            data = self.conn.recv(1024)
+            data = conn.recv(1024)
             headers = self.parse_headers(data)
 
             # Perform WebSocket handshake
@@ -46,11 +44,13 @@ class Server(threading.Thread):
             resp_key = self.calculate_response_key(key)
             handshake_response = self.create_handshake_response(resp_key)
 
-            self.conn.sendall(handshake_response.encode())
+            conn.sendall(handshake_response.encode())
+
+            self.assign_client_id_and_connect(conn)
 
             # Handle WebSocket frames
             while self._is_running:
-                frame = self.conn.recv(2)
+                frame = conn.recv(2)
                 if not frame:
                     break
 
@@ -70,14 +70,14 @@ class Server(threading.Thread):
                     )
 
                 if mask:
-                    masking_key = self.conn.recv(4)
+                    masking_key = conn.recv(4)
 
                 if payload_length == 126:
-                    payload_length = struct.unpack("!H", self.conn.recv(2))[0]
+                    payload_length = struct.unpack("!H", conn.recv(2))[0]
                 elif payload_length == 127:
-                    payload_length = struct.unpack("!Q", self.conn.recv(8))[0]
+                    payload_length = struct.unpack("!Q", conn.recv(8))[0]
 
-                payload_data = self.conn.recv(payload_length)
+                payload_data = conn.recv(payload_length)
 
                 if mask:
                     unmasked_data = bytearray()
@@ -93,6 +93,15 @@ class Server(threading.Thread):
 
             if self.on_disconnect:
                 self.on_disconnect(self.addr)
+
+    def assign_client_id_and_connect(self, conn):
+        client_id = self._client_code_counter
+        self.clients[client_id] = conn
+
+        if self.on_connect:
+            self.on_connect(client_id)
+
+        self._client_code_counter += 1
 
     def parse_headers(self, data):
         headers = {}
@@ -123,12 +132,15 @@ class Server(threading.Thread):
         except json.JSONDecodeError:
             return None
 
-    def send(self, payload: dict) -> None:
+    def send(self, client_id: int, payload: dict) -> None:
         # Convert the payload object to a JSON string
         payload_json = json.dumps(payload)
 
-        # Send the header and payload through the socket connection
-        self.conn.sendall(self.create_websocket_header(payload_json.encode("utf-8")))
+        conn = self.clients.get(client_id)
+
+        if conn:
+            # Send the header and payload through the socket connection
+            conn.sendall(self.create_websocket_header(payload_json.encode("utf-8")))
 
     def create_websocket_header(self, payload):
         header = bytearray()

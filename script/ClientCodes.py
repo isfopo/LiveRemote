@@ -7,7 +7,7 @@ class ClientCodes:
     A class to store client codes
     """
 
-    _map: Dict[str, int] = {}
+    _map: Dict[int, int] = {}
 
     def new(self, clientId):
         self._map[clientId] = Live.Application.get_random_int(  # type: ignore
