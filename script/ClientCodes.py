@@ -9,19 +9,19 @@ class ClientCodes:
 
     _map: Dict[int, int] = {}
 
-    def new(self, clientId):
-        self._map[clientId] = Live.Application.get_random_int(  # type: ignore
+    def new(self, client_id):
+        self._map[client_id] = Live.Application.get_random_int(  # type: ignore
             100000, 999999
         )
 
-    def remove(self, clientId: str):
-        del self._map[clientId]
+    def remove(self, client_id: str):
+        del self._map[client_id]
 
-    def validate(self, clientId: str, code: int):
-        if self._map[clientId] == code:
+    def validate(self, client_id: str, code: int):
+        if self._map[client_id] == code:
             return True
         else:
             return False
 
-    def get(self, clientId: str):
-        return self._map[clientId]
+    def get(self, client_id: str):
+        return self._map[client_id]
