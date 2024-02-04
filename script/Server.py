@@ -56,9 +56,9 @@ class Server(threading.Thread):
 
                 first_byte, second_byte = struct.unpack("!BB", frame)
 
-                fin = (first_byte & 0b10000000) >> 7
-                opcode = first_byte & 0b00001111
-                rsv1 = (first_byte & 0b01000000) >> 6
+                # fin = (first_byte & 0b10000000) >> 7
+                # opcode = first_byte & 0b00001111
+                # rsv1 = (first_byte & 0b01000000) >> 6
                 rsv2 = (first_byte & 0b00100000) >> 5
                 rsv3 = (first_byte & 0b00010000) >> 4
                 mask = (second_byte & 0b10000000) >> 7
@@ -82,7 +82,9 @@ class Server(threading.Thread):
                 if mask:
                     unmasked_data = bytearray()
                     for i in range(len(payload_data)):
-                        unmasked_data.append(payload_data[i] ^ masking_key[i % 4])
+                        unmasked_data.append(
+                            payload_data[i] ^ masking_key[i % 4]
+                        )
                     payload_data = unmasked_data
 
                 # Parse payload_data to object
@@ -142,7 +144,9 @@ class Server(threading.Thread):
 
         if conn:
             # Send the header and payload through the socket connection
-            conn.sendall(self.create_websocket_header(payload_json.encode("utf-8")))
+            conn.sendall(
+                self.create_websocket_header(payload_json.encode("utf-8"))
+            )
 
     def create_websocket_header(self, payload):
         header = bytearray()
@@ -150,7 +154,7 @@ class Server(threading.Thread):
         # Set the FIN bit to 1 and opcode to 1 for a text message
         header.append(0b10000001)
 
-        # Set the mask bit to 0 (masking is not required for server-to-client messages)
+        # Set the mask bit to 0
         payload_length = len(payload)
         if payload_length < 126:
             header.append(payload_length)
