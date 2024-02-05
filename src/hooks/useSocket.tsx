@@ -38,7 +38,6 @@ export const useSocket = ({
 }: UseSocketOptions = {}) => {
   const dispatch = useAppDispatch();
 
-  const index = useRef<number>(low);
   const [candidates, setCandidates] = useState<SocketHost[]>([]);
   const loading = useRef<boolean>(true);
 
@@ -48,9 +47,11 @@ export const useSocket = ({
   const [error, setError] = useState<string | undefined>();
 
   const find = useCallback(() => {
+    let index = 0;
+
     const next = () => {
-      while (index.current <= high) {
-        tryOne(index.current++);
+      while (index <= high) {
+        tryOne(index++);
       }
     };
 
@@ -97,7 +98,7 @@ export const useSocket = ({
     };
 
     const done = () => {
-      if (index.current > high) {
+      if (index > high) {
         loading.current = false;
       }
     };
@@ -114,7 +115,6 @@ export const useSocket = ({
   const reload = useCallback(() => {
     loading.current = true;
     setCandidates([]);
-    index.current = 0;
     find();
   }, [find]);
 
