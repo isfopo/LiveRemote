@@ -46,19 +46,19 @@ class Server(threading.Thread):
             client_thread.start()
 
     def handle_client(self, conn: socket.socket, addr):
+        data = conn.recv(1024)
+        headers = self.parse_headers(data)
+
+        # Perform WebSocket handshake
+        key = headers["Sec-WebSocket-Key"]
+        resp_key = self.calculate_response_key(key)
+        handshake_response = self.create_handshake_response(resp_key)
+
+        conn.sendall(handshake_response.encode())
+
+        client_id = self.assign_client_id_and_connect(conn)
+
         try:
-            data = conn.recv(1024)
-            headers = self.parse_headers(data)
-
-            # Perform WebSocket handshake
-            key = headers["Sec-WebSocket-Key"]
-            resp_key = self.calculate_response_key(key)
-            handshake_response = self.create_handshake_response(resp_key)
-
-            conn.sendall(handshake_response.encode())
-
-            client_id = self.assign_client_id_and_connect(conn)
-
             # Handle WebSocket frames
             while self._is_running:
                 frame = conn.recv(2)
