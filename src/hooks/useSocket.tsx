@@ -22,7 +22,6 @@ export interface UseSocketOptions {
   low?: number;
   high?: number;
   maxConcurrentTests?: number;
-  timeout?: number;
   lazyLoad?: boolean;
 }
 
@@ -35,7 +34,6 @@ export const useSocket = ({
   base = "192.168.1",
   low = 0,
   high = 255,
-  timeout = 2000,
   lazyLoad = false,
 }: UseSocketOptions = {}) => {
   const dispatch = useAppDispatch();
@@ -102,7 +100,7 @@ export const useSocket = ({
     };
 
     next();
-  }, [base, high, port, candidates, timeout]);
+  }, [base, high, port, candidates]);
 
   useEffect(() => {
     if (!lazyLoad && !connected) {
