@@ -9,7 +9,6 @@ import {
   SocketHost,
 } from "../store/socket/types";
 import { useAppDispatch } from "./useAppDispatch";
-import { connect as connectState } from "../store/socket/slice";
 
 export interface UseSocketOptions {
   onConnect?: () => void;
@@ -30,7 +29,7 @@ export const useSocket = ({
   onMessage,
   onDisconnect,
   onError,
-  port = 9001,
+  port = 8000,
   base = "192.168.1",
   low = 0,
   high = 255,
