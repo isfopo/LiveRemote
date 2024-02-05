@@ -49,7 +49,7 @@ export const useSocket = ({
   const [error, setError] = useState<string | undefined>();
 
   const find = useCallback(() => {
-    let index = 0;
+    let index = low;
 
     const next = () => {
       while (index <= high) {
