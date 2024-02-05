@@ -11,12 +11,12 @@ PORT = 8000
 
 
 class Server(threading.Thread):
-    socket: socket
-    clients: Dict[str, socket.socket]
+    sock: socket.socket
+    clients: Dict[int, socket.socket]
 
     def __init__(
         self,
-        control_surface: ControlSurface,
+        control_surface: ControlSurface.ControlSurface,
         port=PORT,
         on_connect=None,
         on_message=None,
@@ -33,12 +33,12 @@ class Server(threading.Thread):
         self._client_code_counter = 0
 
     def run(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.bind(("0.0.0.0", self.port))
-        self.socket.listen(1)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.bind(("0.0.0.0", self.port))
+        self.sock.listen(1)
 
         while True:
-            conn, addr = self.socket.accept()
+            conn, addr = self.sock.accept()
 
             client_thread = threading.Thread(
                 target=self.handle_client, args=(conn, addr)

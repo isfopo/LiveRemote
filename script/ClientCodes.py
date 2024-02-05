@@ -14,14 +14,14 @@ class ClientCodes:
             100000, 999999
         )
 
-    def remove(self, client_id: str):
+    def remove(self, client_id: int):
         del self._map[client_id]
 
-    def validate(self, client_id: str, code: int):
+    def validate(self, client_id: int, code: int):
         if self._map[client_id] == code:
             return True
         else:
             return False
 
-    def get(self, client_id: str):
+    def get(self, client_id: int):
         return self._map[client_id]
