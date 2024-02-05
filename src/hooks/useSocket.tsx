@@ -60,8 +60,7 @@ export const useSocket = ({
         const socket = new WebSocket(`ws://${base}.${ip}:${port}`);
 
         socket.onopen = () => {
-          done();
-          next();
+          onConnect?.();
         };
 
         socket.onmessage = (e) => {
@@ -117,11 +116,8 @@ export const useSocket = ({
   const connect = useCallback(
     (host: SocketHost) => {
       if (host.socket.OPEN) {
-        host.socket.onopen = () => {
-          dispatch(connectHost(host));
-          setConnected(true);
-          onConnect?.();
-        };
+        dispatch(connectHost(host));
+        setConnected(true);
 
         host.socket.onclose = () => {
           setConnected(false);

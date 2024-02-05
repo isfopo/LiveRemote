@@ -10,10 +10,17 @@ export const socket = createSlice({
   name: "socket",
   initialState: initialState,
   reducers: {
-    connectHost: (_, { payload }: PayloadAction<SocketHost>) => {
+    connectHost: (state, { payload }: PayloadAction<SocketHost>) => {
       return {
+        ...state,
         host: payload,
         code: null,
+      };
+    },
+    setCode: (state, { payload }: PayloadAction<string>) => {
+      return {
+        ...state,
+        code: payload,
       };
     },
     disconnect: (state) => {
