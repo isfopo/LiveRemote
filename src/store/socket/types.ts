@@ -5,7 +5,7 @@ export interface SocketState {
 
 export interface SocketHost {
   url: string;
-  hostName: string;
+  name: string;
   socket: WebSocket;
 }
 

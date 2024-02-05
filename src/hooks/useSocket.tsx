@@ -9,6 +9,8 @@ import {
   SocketHost,
 } from "../store/socket/types";
 import { useAppDispatch } from "./useAppDispatch";
+import { useAppSelector } from "./useAppSelector";
+import { connectHost } from "../store/socket/slice";
 
 export interface UseSocketOptions {
   onConnect?: () => void;
@@ -37,11 +39,11 @@ export const useSocket = ({
   lazyLoad = false,
 }: UseSocketOptions = {}) => {
   const dispatch = useAppDispatch();
+  const { host } = useAppSelector((state) => state.socket);
 
   const [candidates, setCandidates] = useState<SocketHost[]>([]);
   const loading = useRef<boolean>(true);
 
-  const socket = useRef<WebSocket | undefined>();
   const [connected, setConnected] = useState<boolean>(false);
   const [code, _setCode] = useState<number | undefined>();
   const [error, setError] = useState<string | undefined>();
@@ -56,45 +58,41 @@ export const useSocket = ({
     };
 
     const tryOne = (ip: number) => {
-      const socket = new WebSocket(`ws://${base}.${ip}:${port}`);
+      try {
+        const socket = new WebSocket(`ws://${base}.${ip}:${port}`);
 
-      // setTimeout(() => {
-      //   const s = socket;
-      //   socket = null;
-      //   s?.close();
-      // }, timeout);
+        socket.onopen = () => {
+          done();
+          next();
+        };
 
-      socket.onopen = () => {
-        done();
-        next();
-      };
-
-      socket.onmessage = (e) => {
-        const message = JSON.parse(e.data) as IncomingMessage;
-        if (message.method === Method.AUTH) {
-          if (message.address === "/socket" && message.prop === "info") {
-            if (message.status === Status.SUCCESS) {
-              setCandidates((s) =>
-                socket
-                  ? [
-                      ...s,
-                      {
-                        url: socket.url,
-                        hostName: message.result as string,
-                        socket,
-                      },
-                    ]
-                  : s
-              );
+        socket.onmessage = (e) => {
+          const message = JSON.parse(e.data) as IncomingMessage;
+          if (message.method === Method.AUTH) {
+            if (message.address === "/socket" && message.prop === "info") {
+              if (message.status === Status.SUCCESS) {
+                setCandidates((s) =>
+                  socket
+                    ? [
+                        ...s,
+                        {
+                          url: socket.url,
+                          name: message.result as string,
+                          socket,
+                        },
+                      ]
+                    : s
+                );
+              }
             }
           }
-        }
-      };
+        };
 
-      socket.onerror = () => {
-        done();
-        next();
-      };
+        socket.onerror = () => {
+          done();
+          next();
+        };
+      } catch {}
     };
 
     const done = () => {
@@ -107,7 +105,7 @@ export const useSocket = ({
   }, [base, high, port, candidates, timeout]);
 
   useEffect(() => {
-    if (!lazyLoad) {
+    if (!lazyLoad && !connected) {
       find();
     }
   }, []);
@@ -122,6 +120,7 @@ export const useSocket = ({
     (host: SocketHost) => {
       if (host.socket.OPEN) {
         host.socket.onopen = () => {
+          dispatch(connectHost(host));
           setConnected(true);
           onConnect?.();
         };
@@ -154,9 +153,8 @@ export const useSocket = ({
   );
 
   const disconnect = useCallback(() => {
-    if (socket.current) {
-      socket.current.close();
-      socket.current = undefined;
+    if (host?.socket) {
+      host.socket.close();
     }
     _setCode(undefined);
   }, []);
@@ -179,8 +177,8 @@ export const useSocket = ({
           : typeof message.value;
       };
 
-      if (socket.current) {
-        socket.current.send(
+      if (host?.socket) {
+        host.socket.send(
           JSON.stringify({
             ...message,
             code: codeOverride ?? code,
@@ -191,6 +189,14 @@ export const useSocket = ({
     },
     [code]
   );
+
+  const showCode = useCallback(() => {
+    send({
+      method: Method.AUTH,
+      address: "/code",
+      prop: "show",
+    });
+  }, [send]);
 
   const setCode = useCallback(
     (input: number) => {
@@ -214,5 +220,6 @@ export const useSocket = ({
     error,
     code,
     setCode,
+    showCode,
   };
 };
