@@ -3,13 +3,13 @@ from _Framework.ControlSurface import ControlSurface
 from .Server import Server
 from .helpers.host import get_hostname
 from .ClientCodes import ClientCodes
-from .messages.Status import Status
+from .Status import Status
 from .helpers.lists import first
 from .Listener import Listener
-from .messages.OutgoingMessage import OutgoingMessage
+from .OutgoingMessage import OutgoingMessage
 
-from .messages.IncomingMessage import IncomingMessage
-from .messages.Method import Method
+from .IncomingMessage import IncomingMessage
+from .Method import Method
 import json
 
 
