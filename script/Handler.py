@@ -46,7 +46,7 @@ class Handler:
                 "/socket",
                 "info",
                 get_hostname(),
-            ).data,
+            ).to_dict(),
         )
 
     def on_disconnect(self, client_id: int):
@@ -87,7 +87,7 @@ class Handler:
                             message.address,
                             message.prop,
                             message.code,
-                        ).data,
+                        ).to_dict(),
                     )
                 else:
                     self.server.send(
@@ -98,7 +98,7 @@ class Handler:
                             message.address,
                             message.prop,
                             "Incorrect code",
-                        ).data,
+                        ).to_dict(),
                     )
                 return
 
@@ -122,7 +122,7 @@ class Handler:
                         message.address,
                         message.prop,
                         value,
-                    ).data,
+                    ).to_dict(),
                 )
                 return
 
@@ -156,7 +156,7 @@ class Handler:
                                         message.prop,
                                         result,
                                     )
-                                ).data,
+                                ).to_dict(),
                             )
                         except BrokenPipeError:
                             self.server.send(
@@ -169,7 +169,7 @@ class Handler:
                                         message.prop,
                                         result,
                                     )
-                                ).data,
+                                ).to_dict(),
                             )
                         return
 
@@ -195,7 +195,7 @@ class Handler:
                                 message.prop,
                                 str(error),
                             )
-                        ).data,
+                        ).to_dict(),
                     )
                     return
             else:
@@ -209,7 +209,7 @@ class Handler:
                             message.prop,
                             "listener already exists",
                         )
-                    ).data,
+                    ).to_dict(),
                 )
                 return
 
@@ -238,7 +238,7 @@ class Handler:
                         message.address,
                         message.prop,
                     )
-                ).data,
+                ).to_dict(),
             )
             return
 
@@ -254,7 +254,7 @@ class Handler:
                     message.address,
                     message.prop,
                     "Not authorized",
-                ).data,
+                ).to_dict(),
             )
             return
 
@@ -277,7 +277,7 @@ class Handler:
                         message.address,
                         message.prop,
                         result,
-                    ).data,
+                    ).to_dict(),
                 )
             except Exception as error:
                 self.server.send(
@@ -288,7 +288,7 @@ class Handler:
                         message.address,
                         message.prop,
                         str(error),
-                    ).data,
+                    ).to_dict(),
                 )
                 return
 
@@ -314,7 +314,7 @@ class Handler:
                             message.address,
                             message.prop,
                             message.value,
-                        ).data,
+                        ).to_dict(),
                     )
                     return
 
@@ -327,7 +327,7 @@ class Handler:
                             message.address,
                             message.prop,
                             str(error),
-                        ).data,
+                        ).to_dict(),
                     )
                     return
 
@@ -340,7 +340,7 @@ class Handler:
                         message.address,
                         message.prop,
                         "No value was given",
-                    ).data,
+                    ).to_dict(),
                 )
                 return
 

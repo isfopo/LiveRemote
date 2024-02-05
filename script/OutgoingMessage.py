@@ -1,4 +1,3 @@
-import json
 from typing import Union
 
 from .Status import Status
@@ -37,14 +36,11 @@ class OutgoingMessage:
         self.prop = prop
         self.result = result
 
-    @property
-    def data(self):
-        return json.dumps(
-            {
-                "status": self.status.value,
-                "method": self.method.value,
-                "address": self.address,
-                "prop": self.prop,
-                "result": self.result,
-            }
-        )
+    def to_dict(self):
+        return {
+            "status": self.status.value,
+            "method": self.method.value,
+            "address": self.address,
+            "prop": self.prop,
+            "result": self.result,
+        }
