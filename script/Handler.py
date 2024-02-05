@@ -49,22 +49,22 @@ class Handler:
             ).data,
         )
 
-    def on_disconnect(self, client):
+    def on_disconnect(self, client_id: int):
         """
         Called for every client disconnecting
         """
         for listener in self.listeners:
-            if listener.client == client:
+            if listener.client == client_id:
                 getattr(listener.target, f"remove_{listener.prop}_listener")(
                     listener.callback
                 )
 
                 self.listeners.remove(listener)
 
-        self.client_codes.remove(client["id"])
+        self.client_codes.remove(client_id)
 
         self.control_surface.log_message(
-            "Client({client}) disconnected".format(client=client)
+            "Client({client}) disconnected".format(client=client_id)
         )
 
     def on_message(self, client_id: int, payload: str):

@@ -4,12 +4,16 @@ import json
 import base64
 import hashlib
 import struct
+from typing import Dict
 from _Framework import ControlSurface
 
 PORT = 8000
 
 
 class Server(threading.Thread):
+    socket: socket
+    clients: Dict[str, socket.socket]
+
     def __init__(
         self,
         control_surface: ControlSurface,
@@ -29,19 +33,19 @@ class Server(threading.Thread):
         self._client_code_counter = 0
 
     def run(self):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.bind(("0.0.0.0", self.port))
-        sock.listen(1)
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket.bind(("0.0.0.0", self.port))
+        self.socket.listen(1)
 
         while True:
-            conn, addr = sock.accept()
+            conn, addr = self.socket.accept()
 
             client_thread = threading.Thread(
                 target=self.handle_client, args=(conn, addr)
             )
             client_thread.start()
 
-    def handle_client(self, conn, addr):
+    def handle_client(self, conn: socket.socket, addr):
         try:
             data = conn.recv(1024)
             headers = self.parse_headers(data)
@@ -64,7 +68,12 @@ class Server(threading.Thread):
                 first_byte, second_byte = struct.unpack("!BB", frame)
 
                 # fin = (first_byte & 0b10000000) >> 7
-                # opcode = first_byte & 0b00001111
+                opcode = first_byte & 0b00001111
+
+                if opcode == 0x8:
+                    self.handle_disconnect(client_id)
+                    break
+
                 # rsv1 = (first_byte & 0b01000000) >> 6
                 rsv2 = (first_byte & 0b00100000) >> 5
                 rsv3 = (first_byte & 0b00010000) >> 4
@@ -106,6 +115,8 @@ class Server(threading.Thread):
     def handle_disconnect(self, client_id):
         if self.on_disconnect:
             self.on_disconnect(client_id)
+
+        self.clients[client_id].close()
 
         del self.clients[client_id]
 
@@ -181,4 +192,6 @@ class Server(threading.Thread):
 
     def shutdown(self):
         self._is_running = False
-        self.conn.close()
+
+        for client_id in self.clients:
+            self.clients[client_id].close()
