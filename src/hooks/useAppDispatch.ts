@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../store/store";
+import { RootState } from "../store/store";
+import { Action, ThunkDispatch } from "@reduxjs/toolkit";
 
-// Use throughout your app instead of plain `useDispatch` and `useSelector`
-type DispatchFunc = () => AppDispatch;
-export const useAppDispatch: DispatchFunc = useDispatch;
+export const useAppDispatch = () =>
+  useDispatch<ThunkDispatch<RootState, null, Action>>();

@@ -17,7 +17,7 @@ export const socket = createSlice({
         code: null,
       };
     },
-    setCode: (state, { payload }: PayloadAction<string>) => {
+    setCode: (state, { payload }: PayloadAction<number | null>) => {
       return {
         ...state,
         code: payload,
@@ -37,6 +37,6 @@ export const socket = createSlice({
   },
 });
 
-export const { connectHost, disconnect } = socket.actions;
+export const { connectHost, setCode, disconnect } = socket.actions;
 
 export default socket.reducer;

@@ -10,7 +10,8 @@ import {
 } from "../store/socket/types";
 import { useAppDispatch } from "./useAppDispatch";
 import { useAppSelector } from "./useAppSelector";
-import { connectHost } from "../store/socket/slice";
+import { connectHost, setCode } from "../store/socket/slice";
+import { useDispatch } from "react-redux";
 
 export interface UseSocketOptions {
   onConnect?: () => void;
@@ -37,13 +38,12 @@ export const useSocket = ({
   lazyLoad = false,
 }: UseSocketOptions = {}) => {
   const dispatch = useAppDispatch();
-  const { host } = useAppSelector((state) => state.socket);
+  const { host, code } = useAppSelector((state) => state.socket);
 
   const [candidates, setCandidates] = useState<SocketHost[]>([]);
   const loading = useRef<boolean>(true);
 
   const [connected, setConnected] = useState<boolean>(false);
-  const [code, _setCode] = useState<number | undefined>();
   const [error, setError] = useState<string | undefined>();
 
   const find = useCallback(() => {
@@ -129,7 +129,7 @@ export const useSocket = ({
           if (message.method === Method.AUTH) {
             if (message.address === "/code" && message.prop === "check") {
               if (message.status === Status.SUCCESS) {
-                _setCode(message.result as number);
+                dispatch(setCode(message.result as number));
               } else if (message.status === Status.FAILURE) {
                 setError(message.result as string);
               }
@@ -150,15 +150,12 @@ export const useSocket = ({
     if (host?.socket) {
       host.socket.close();
     }
-    _setCode(undefined);
+    dispatch(setCode(null));
   }, []);
 
   const send = useCallback(
-    (
-      message: OutgoingMessage,
-      { codeOverride, bypassCode }: SendOptions = {}
-    ) => {
-      if (!bypassCode && !code && !codeOverride) {
+    (message: OutgoingMessage, { codeOverride }: SendOptions = {}) => {
+      if (!code && !codeOverride) {
         setError("Code is not set");
         return;
       }
@@ -192,7 +189,7 @@ export const useSocket = ({
     });
   }, [send]);
 
-  const setCode = useCallback(
+  const checkCode = useCallback(
     (input: number) => {
       send({
         method: Method.AUTH,
@@ -213,7 +210,7 @@ export const useSocket = ({
     send,
     error,
     code,
-    setCode,
+    checkCode,
     showCode,
   };
 };

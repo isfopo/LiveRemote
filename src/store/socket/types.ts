@@ -1,5 +1,5 @@
 export interface SocketState {
-  code: string | null;
+  code: number | null;
   host: SocketHost | null;
 }
 
