@@ -96,6 +96,8 @@ class Server(threading.Thread):
                 payload_data = conn.recv(payload_length)
 
                 if mask:
+                    masking_key = [0, 0, 0, 0]
+
                     unmasked_data = bytearray()
                     for i in range(len(payload_data)):
                         unmasked_data.append(
