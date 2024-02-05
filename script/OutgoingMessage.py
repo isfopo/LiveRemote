@@ -1,7 +1,7 @@
 import json
 from typing import Union
 
-from ..messages.Status import Status
+from .Status import Status
 from .Method import Method
 
 
