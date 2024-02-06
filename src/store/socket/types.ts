@@ -43,26 +43,23 @@ export enum Status {
   FAILURE = 400,
 }
 
-export interface IncomingMessage {
-  /** status of request */
-  status: Status;
+export interface Message {
   /** action to take */
   method: Method;
   /** location of property or method */
   address: string;
   /** property or method */
   prop: string;
+}
+
+export interface IncomingMessage extends Message {
+  /** status of request */
+  status: Status;
   /** params to be passed to method */
   result: string | number | boolean | Array<string | number | boolean>;
 }
 
-export interface OutgoingMessage {
-  /** action to take */
-  method: Method;
-  /** location of property or method */
-  address: string;
-  /** property or method */
-  prop: string;
+export interface OutgoingMessage extends Message {
   /** params to be passed to method */
   value?: string | number | boolean;
   /** Overrides typeof for python friendly types */
