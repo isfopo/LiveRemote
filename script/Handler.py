@@ -105,9 +105,7 @@ class Handler:
         elif message.method == Method.GET:
             if message.address == "/pref":
                 if message.prop == "all":
-                    value = json.dumps(
-                        self.control_surface.preferences.getAll()
-                    )
+                    value = json.dumps(self.control_surface.preferences.getAll())
                 else:
                     value = self.control_surface.preferences.get(message.prop)
             else:
@@ -140,9 +138,7 @@ class Handler:
             ):
 
                 def callback():
-                    result = getattr(
-                        self.locate(message.address), message.prop
-                    )
+                    result = getattr(self.locate(message.address), message.prop)
 
                     if result is not None:
                         try:
@@ -218,8 +214,7 @@ class Handler:
                 [
                     listener
                     for listener in self.listeners
-                    if listener.client == client_id
-                    and listener.prop == message.prop
+                    if listener.client == client_id and listener.prop == message.prop
                 ]
             )
 
@@ -261,13 +256,11 @@ class Handler:
         if message.method == Method.CALL:
             try:
                 if message.value is not None:
-                    result = getattr(
-                        self.locate(message.address), message.prop
-                    )(message.value)
+                    result = getattr(self.locate(message.address), message.prop)(
+                        message.value
+                    )
                 else:
-                    result = getattr(
-                        self.locate(message.address), message.prop
-                    )()
+                    result = getattr(self.locate(message.address), message.prop)()
 
                 self.server.send(
                     client_id,

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Union
 import Live
 
 
@@ -17,8 +17,8 @@ class ClientCodes:
     def remove(self, client_id: int):
         del self._map[client_id]
 
-    def validate(self, client_id: int, code: int):
-        if self._map[client_id] == code:
+    def validate(self, client_id: int, code: Union[int, None]):
+        if code is not None and self._map[client_id] == code:
             return True
         else:
             return False
