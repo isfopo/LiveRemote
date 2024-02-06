@@ -20,7 +20,7 @@ export interface UseSocketOptions {
   low?: number;
   high?: number;
   maxConcurrentTests?: number;
-  lazyLoad?: boolean;
+  find?: boolean;
 }
 
 export const useSocket = ({
@@ -32,7 +32,7 @@ export const useSocket = ({
   base = "192.168.1",
   low = 0,
   high = 255,
-  lazyLoad = false,
+  find = false,
 }: UseSocketOptions = {}) => {
   const dispatch = useAppDispatch();
   const { host, code } = useAppSelector((state) => state.socket);
@@ -43,7 +43,7 @@ export const useSocket = ({
   const [connected, setConnected] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>();
 
-  const find = useCallback(() => {
+  const findSocket = useCallback(() => {
     let index = low;
 
     const next = () => {
@@ -99,16 +99,16 @@ export const useSocket = ({
   }, [base, high, port, candidates]);
 
   useEffect(() => {
-    if (!lazyLoad && !connected) {
-      find();
+    if (find && !connected) {
+      findSocket();
     }
   }, []);
 
   const reload = useCallback(() => {
     loading.current = true;
     setCandidates([]);
-    find();
-  }, [find]);
+    findSocket();
+  }, [findSocket]);
 
   const connect = useCallback(
     (host: SocketHost) => {
