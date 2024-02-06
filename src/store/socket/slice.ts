@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SendOptions, SendPayload, SocketHost, SocketState } from "./types";
+import { SendPayload, SocketHost, SocketState } from "./types";
 
 const initialState: SocketState = {
   code: null,
@@ -8,7 +8,7 @@ const initialState: SocketState = {
 
 export const socket = createSlice({
   name: "socket",
-  initialState: initialState,
+  initialState,
   reducers: {
     connectHost: (state, { payload }: PayloadAction<SocketHost>) => {
       return {
