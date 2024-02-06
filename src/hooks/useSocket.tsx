@@ -38,12 +38,13 @@ export const useSocket = ({
   const { host, code } = useAppSelector((state) => state.socket);
 
   const [candidates, setCandidates] = useState<SocketHost[]>([]);
-  const loading = useRef<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [connected, setConnected] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>();
 
   const findSocket = useCallback(() => {
+    setLoading(true);
     let index = low;
 
     const next = () => {
@@ -91,7 +92,7 @@ export const useSocket = ({
 
     const done = () => {
       if (index > high) {
-        loading.current = false;
+        setLoading(false);
       }
     };
 
@@ -105,7 +106,7 @@ export const useSocket = ({
   }, []);
 
   const reload = useCallback(() => {
-    loading.current = true;
+    setLoading(true);
     setCandidates([]);
     findSocket();
   }, [findSocket]);
@@ -167,7 +168,7 @@ export const useSocket = ({
 
   return {
     candidates,
-    loading: loading.current,
+    loading,
     reload,
     connected,
     connect,
