@@ -4,7 +4,7 @@ import "./App.css";
 import { useAppSelector } from "./hooks/useAppSelector";
 
 function App() {
-  const { candidates, loading, connect, connected } = useSocket();
+  const { candidates, loading, connect, connected, showCode } = useSocket();
   const { host } = useAppSelector((state) => state.socket);
 
   return (
@@ -14,7 +14,14 @@ function App() {
       {candidates.map((c) => (
         <Button onPress={() => connect(c)}>{c.name}</Button>
       ))}
-      <Text>{connected && `connected to ${host?.name}`}</Text>
+      <>
+        {connected && (
+          <>
+            <Text>{host?.name}</Text>
+            <Button onPress={showCode}>Show</Button>
+          </>
+        )}
+      </>
     </>
   );
 }

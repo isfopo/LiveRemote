@@ -143,13 +143,6 @@ export const useSocket = ({
     [onConnect, onDisconnect, onError, onMessage]
   );
 
-  const disconnect = useCallback(() => {
-    if (host?.socket) {
-      host.socket.close();
-    }
-    dispatch(setCode(null));
-  }, []);
-
   const showCode = useCallback(() => {
     dispatch(
       send({
@@ -178,7 +171,6 @@ export const useSocket = ({
     reload,
     connected,
     connect,
-    disconnect,
     send,
     error,
     code,

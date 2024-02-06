@@ -27,10 +27,8 @@ export const socket = createSlice({
       state,
       { payload: { message, codeOverride } }: PayloadAction<SendPayload>
     ) => {
-      if (!state.code || !codeOverride) {
-        return;
-      }
       const getType = () => {
+        if (!message.value) return null;
         return message.type ?? typeof message.value === "number"
           ? "int"
           : typeof message.value;
