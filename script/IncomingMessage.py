@@ -1,4 +1,5 @@
 from .Method import Method
+from typing import Any, Union
 
 
 class IncomingMessage:
@@ -20,29 +21,42 @@ class IncomingMessage:
         type (str): type of value
     """
 
-    def __init__(self, client, obj):
-        self.client = client
-        self.obj = obj
-        try:
-            self.code: int = int(self.obj["code"])
-        except (ValueError, KeyError):
-            self.code = 0
-        self.method: Method = Method(self.obj["method"])
-        self.address: str = self.obj["address"]
-        self.prop: str = self.obj["prop"]
-        self.type: str = self.obj["type"]
+    client_id: int
+    payload: Union[Any, None]
+    method: Method
+    address: str
+    prop: str
+    type: str
+    code: Union[int, None]
+
+    def __init__(self, client_id: int, payload: Union[Any, None]):
+        self.client_id = client_id
+        self.payload = payload
+        if self.payload is not None:
+            self.method = Method(self.payload["method"])
+            self.address = self.payload["address"]
+            self.prop = self.payload["prop"]
+            self.type = self.payload["type"]
+            if self.payload["code"] is not None:
+                try:
+                    self.code = int(self.payload["code"])
+                except (ValueError, KeyError):
+                    self.code = None
 
     @property
     def value(self):
         try:
-            if self.type == "boolean":
-                return bool(self.obj["value"])
-            elif self.type == "int":
-                return int(self.obj["value"])
-            elif self.type == "float":
-                return float(self.obj["value"])
-            elif self.type == "string":
-                return str(self.obj["value"])
+            if self.payload is not None:
+                if self.type == "boolean":
+                    return bool(self.payload["value"])
+                elif self.type == "int":
+                    return int(self.payload["value"])
+                elif self.type == "float":
+                    return float(self.payload["value"])
+                elif self.type == "string":
+                    return str(self.payload["value"])
+                else:
+                    return None
             else:
                 return None
         except KeyError:

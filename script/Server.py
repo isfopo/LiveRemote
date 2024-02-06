@@ -4,23 +4,29 @@ import json
 import base64
 import hashlib
 import struct
-from typing import Dict
+from typing import Any, Dict, Callable, Union
 from _Framework import ControlSurface
 
 PORT = 8000
 
 
 class Server(threading.Thread):
+    port: int
     sock: socket.socket
     clients: Dict[int, socket.socket]
+    on_connect: Union[Callable[[int], None], None]
+    on_message: Union[Callable[[int, Union[Any, None]], None], None]
+    on_disconnect: Union[Callable[[int], None], None]
 
     def __init__(
         self,
         control_surface: ControlSurface.ControlSurface,
         port=PORT,
-        on_connect=None,
-        on_message=None,
-        on_disconnect=None,
+        on_connect: Union[Callable[[int], None], None] = None,
+        on_message: Union[
+            Callable[[int, Union[Any, None]], None], None
+        ] = None,
+        on_disconnect: Union[Callable[[int], None], None] = None,
     ):
         super().__init__()
         self.port = port
@@ -96,8 +102,6 @@ class Server(threading.Thread):
                 payload_data = conn.recv(payload_length)
 
                 if mask:
-                    masking_key = [0, 0, 0, 0]
-
                     unmasked_data = bytearray()
                     for i in range(len(payload_data)):
                         unmasked_data.append(
@@ -105,11 +109,10 @@ class Server(threading.Thread):
                         )
                     payload_data = unmasked_data
 
-                # Parse payload_data to object
-                payload = self.parse_payload_to_object(payload_data)
-
                 if self.on_message:
-                    self.on_message(client_id, payload)
+                    self.on_message(
+                        client_id, self.parse_payload_to_object(payload_data)
+                    )
 
         except (ConnectionResetError, BrokenPipeError):
             self.handle_disconnect(client_id)
@@ -156,7 +159,7 @@ class Server(threading.Thread):
             "Sec-WebSocket-Accept: {}\r\n\r\n"
         ).format(key)
 
-    def parse_payload_to_object(self, payload_data):
+    def parse_payload_to_object(self, payload_data: Union[bytearray, bytes]):
         try:
             return json.loads(payload_data.decode())
         except json.JSONDecodeError:
