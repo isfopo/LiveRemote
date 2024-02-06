@@ -19,8 +19,9 @@ export interface FindPayload {
   lazyLoad?: boolean;
 }
 
-export interface ConnectPayload {
-  host: SocketHost;
+export interface SendPayload {
+  message: OutgoingMessage;
+  codeOverride?: number;
 }
 
 export enum Method {

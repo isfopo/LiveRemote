@@ -4,14 +4,11 @@ import {
   IncomingMessage,
   Method,
   Status,
-  OutgoingMessage,
-  SendOptions,
   SocketHost,
 } from "../store/socket/types";
 import { useAppDispatch } from "./useAppDispatch";
 import { useAppSelector } from "./useAppSelector";
-import { connectHost, setCode } from "../store/socket/slice";
-import { useDispatch } from "react-redux";
+import { connectHost, send, setCode } from "../store/socket/slice";
 
 export interface UseSocketOptions {
   onConnect?: () => void;
@@ -153,48 +150,23 @@ export const useSocket = ({
     dispatch(setCode(null));
   }, []);
 
-  const send = useCallback(
-    (message: OutgoingMessage, { codeOverride }: SendOptions = {}) => {
-      if (!code && !codeOverride) {
-        setError("Code is not set");
-        return;
-      }
-
-      setError(undefined);
-
-      const getType = () => {
-        return message.type ?? typeof message.value === "number"
-          ? "int"
-          : typeof message.value;
-      };
-
-      if (host?.socket) {
-        host.socket.send(
-          JSON.stringify({
-            ...message,
-            code: codeOverride ?? code,
-            type: getType(),
-          })
-        );
-      }
-    },
-    [code]
-  );
-
   const showCode = useCallback(() => {
-    send({
-      method: Method.AUTH,
-      address: "/code",
-      prop: "show",
-    });
+    dispatch(
+      send({
+        message: { method: Method.AUTH, address: "/code", prop: "show" },
+      })
+    );
   }, [send]);
 
   const checkCode = useCallback(
     (input: number) => {
       send({
-        method: Method.AUTH,
-        address: "/code",
-        prop: "check",
+        message: {
+          method: Method.AUTH,
+          address: "/code",
+          prop: "check",
+        },
+        codeOverride: input,
       });
     },
     [send]

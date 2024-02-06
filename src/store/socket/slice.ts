@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SocketHost, SocketState } from "./types";
+import { SendOptions, SendPayload, SocketHost, SocketState } from "./types";
 
 const initialState: SocketState = {
   code: null,
@@ -23,6 +23,29 @@ export const socket = createSlice({
         code: payload,
       };
     },
+    send: (
+      state,
+      { payload: { message, codeOverride } }: PayloadAction<SendPayload>
+    ) => {
+      if (!state.code || !codeOverride) {
+        return;
+      }
+      const getType = () => {
+        return message.type ?? typeof message.value === "number"
+          ? "int"
+          : typeof message.value;
+      };
+
+      if (state.host?.socket) {
+        state.host.socket.send(
+          JSON.stringify({
+            ...message,
+            code: codeOverride ?? state.code,
+            type: getType(),
+          })
+        );
+      }
+    },
     disconnect: (state) => {
       if (state.host) {
         state.host.socket.close();
@@ -37,6 +60,6 @@ export const socket = createSlice({
   },
 });
 
-export const { connectHost, setCode, disconnect } = socket.actions;
+export const { connectHost, setCode, send, disconnect } = socket.actions;
 
 export default socket.reducer;
