@@ -4,16 +4,21 @@ import { SocketHost } from "./types";
 import { Reducer } from "react";
 import { Dispatch } from "react";
 
-type SocketAction = {
+export interface SocketState {
+  code: number | null;
+  host: SocketHost | null;
+}
+
+export interface SocketAction {
   type: "connect" | "send" | "disconnect";
   payload?: any;
-};
+}
 
-const SocketContext = createContext<SocketHost | null>(null);
+const SocketContext = createContext<SocketState | null>(null);
 export const SocketDispatchContext =
   createContext<Dispatch<SocketAction> | null>(null);
 
-const socketReducer: Reducer<SocketHost | null, SocketAction> = (
+const socketReducer: Reducer<SocketState | null, SocketAction> = (
   socket,
   action
 ) => {

@@ -1,7 +1,3 @@
-export interface SocketState {
-  code: number | null;
-  host: SocketHost | null;
-}
 
 export interface SocketHost {
   url: string;
