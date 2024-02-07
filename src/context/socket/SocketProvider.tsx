@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import { createContext, useReducer } from "react";
-import { SendPayload, SocketHost } from "./types";
+import { Method, SendPayload, SocketHost } from "./types";
 import { Reducer } from "react";
 import { Dispatch } from "react";
 
@@ -12,6 +12,7 @@ export interface SocketState {
 export interface SocketActions {
   connect: SocketHost;
   send: SendPayload;
+  checkCode: number;
   setCode: number;
   disconnect: null;
 }
@@ -36,10 +37,64 @@ export const SocketContext = createContext<{
   dispatch: () => {},
 });
 
-const socketReducer: Reducer<SocketState, SocketAction> = (socket, action) => {
-  switch (action.type) {
+const socketReducer: Reducer<SocketState, SocketAction> = (
+  state,
+  { type, payload }
+) => {
+  switch (type) {
+    case "connect":
+      return {
+        ...state,
+        host: payload,
+      };
+    case "checkCode":
+      if (state.host?.socket) {
+        state.host.socket.send(
+          JSON.stringify({
+            method: Method.AUTH,
+            address: "/code",
+            prop: "check",
+            code: payload,
+          })
+        );
+      }
+      return state;
+    case "setCode":
+      return {
+        ...state,
+        code: payload,
+      };
+    case "send":
+      const { message } = payload;
+      const getType = () => {
+        if (!message.value) return null;
+        return message.type ?? typeof message.value === "number"
+          ? "int"
+          : typeof message.value;
+      };
+
+      if (state.host?.socket) {
+        state.host.socket.send(
+          JSON.stringify({
+            ...message,
+            code: state.code,
+            type: getType(),
+          })
+        );
+      }
+      return state;
+    case "disconnect":
+      if (state.host) {
+        state.host.socket.close();
+        return {
+          code: null,
+          host: null,
+        };
+      } else {
+        return state;
+      }
     default: {
-      return socket;
+      return state;
     }
   }
 };
