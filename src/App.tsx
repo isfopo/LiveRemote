@@ -2,6 +2,7 @@ import { Button, Text } from "tamagui";
 import { useSocket } from "./hooks/useSocket";
 import "./App.css";
 import { useAppSelector } from "./hooks/useAppSelector";
+import { ModalManager } from "./components/modals/ModalManager";
 
 function App() {
   const { candidates, loading, connect, connected, showCode } = useSocket();
@@ -9,6 +10,7 @@ function App() {
 
   return (
     <>
+      <ModalManager />
       <Text>LiveRemote</Text>
       <Text>{loading ? "searching" : ""}</Text>
       {candidates.map((c) => (
