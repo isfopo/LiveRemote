@@ -1,9 +1,8 @@
 import { combineReducers } from "@reduxjs/toolkit";
 import live from "./live/slice";
 import socket from "./socket/slice";
-import modals from "./modals/slice";
 
-const rootReducer = combineReducers({ live, modals, socket });
+const rootReducer = combineReducers({ live, socket });
 
 export default rootReducer;
 export type RootState = ReturnType<typeof rootReducer>;
