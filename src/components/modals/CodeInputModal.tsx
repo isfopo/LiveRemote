@@ -3,9 +3,10 @@ import { Button, Dialog, Fieldset, Input, Label, Unspaced } from "tamagui";
 export interface CodeInputModalProps {
   open: boolean;
   showCode: () => void;
+  onClose: () => void;
 }
 
-export const CodeInputModal = ({ open }: CodeInputModalProps) => {
+export const CodeInputModal = ({ open, onClose }: CodeInputModalProps) => {
   return (
     <Dialog modal open={open}>
       <Dialog.Portal>
@@ -14,6 +15,7 @@ export const CodeInputModal = ({ open }: CodeInputModalProps) => {
           opacity={0.5}
           enterStyle={{ opacity: 0 }}
           exitStyle={{ opacity: 0 }}
+          onPress={onClose}
         />
 
         <Dialog.Content
@@ -54,6 +56,7 @@ export const CodeInputModal = ({ open }: CodeInputModalProps) => {
                 right="$3"
                 size="$2"
                 circular
+                onPress={onClose}
               >
                 X
               </Button>
