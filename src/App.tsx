@@ -1,30 +1,23 @@
-import { Button, Text } from "tamagui";
+import { Text, YStack } from "tamagui";
 import { useSocket } from "./hooks/useSocket";
 import "./App.css";
-import { useAppSelector } from "./hooks/useAppSelector";
-import { ModalManager } from "./components/modals/ModalManager";
+import { CodeInputModal } from "./components/modals/CodeInputModal";
+import { CandidateStack } from "./components/stacks/CandidateStack";
 
 function App() {
-  const { candidates, loading, connect, connected, showCode } = useSocket();
-  const { host } = useAppSelector((state) => state.socket);
+  const { candidates, loading, connect, connected, showCode, code } = useSocket(
+    {
+      find: true,
+    }
+  );
 
   return (
-    <>
-      <ModalManager />
+    <YStack>
+      <CodeInputModal open={connected && !code} showCode={showCode} />
       <Text>LiveRemote</Text>
       <Text>{loading ? "searching" : ""}</Text>
-      {candidates.map((c) => (
-        <Button onPress={() => connect(c)}>{c.name}</Button>
-      ))}
-      <>
-        {connected && (
-          <>
-            <Text>{host?.name}</Text>
-            <Button onPress={showCode}>Show</Button>
-          </>
-        )}
-      </>
-    </>
+      <CandidateStack candidates={candidates} connect={connect} />
+    </YStack>
   );
 }
 
