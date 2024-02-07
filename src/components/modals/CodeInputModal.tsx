@@ -34,14 +34,16 @@ export const CodeInputModal = ({ open }: CodeInputModalProps) => {
           gap="$4"
         >
           <Dialog.Title>Input Code</Dialog.Title>
+
           <Dialog.Description>
-            Input the code found in your Ableton Live set to connect Live Remote
+            Type the code found in your Ableton Live set to connect Live Remote
           </Dialog.Description>
+
           <Fieldset gap="$4" horizontal>
-            <Label width={160} justifyContent="flex-end" htmlFor="name">
+            <Label display="none" aria-hidden htmlFor="code">
               Code
             </Label>
-            <Input flex={1} id="name" />
+            <Input flex={2} flexGrow={1} id="code" />
           </Fieldset>
 
           <Unspaced>
