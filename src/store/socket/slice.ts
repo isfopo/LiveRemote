@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SendPayload, SocketHost, SocketState } from "./types";
+import { SendPayload, SocketHost, SocketState } from "../../context/socket/types";
 
 const initialState: SocketState = {
   code: null,

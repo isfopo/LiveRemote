@@ -5,7 +5,7 @@ import {
   Method,
   Status,
   SocketHost,
-} from "../store/socket/types";
+} from "../context/socket/types";
 import { useAppDispatch } from "./useAppDispatch";
 import { useAppSelector } from "./useAppSelector";
 import { connectHost, send, setCode } from "../store/socket/slice";

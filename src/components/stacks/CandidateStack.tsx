@@ -1,5 +1,5 @@
 import { Button, YStack } from "tamagui";
-import { SocketHost } from "../../store/socket/types";
+import { SocketHost } from "../../context/socket/types";
 
 export interface CandidateStackProps {
   connect: (host: SocketHost) => void;
