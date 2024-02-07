@@ -5,7 +5,6 @@ import {
   Status,
   SocketHost,
 } from "../context/socket/types";
-import { send } from "../store/socket/slice";
 import { useSocketContext } from "../context/socket/useSocketContext";
 
 export interface UseSocketOptions {
@@ -159,21 +158,14 @@ export const useSocket = ({
         message: { method: Method.AUTH, address: "/code", prop: "show" },
       },
     });
-  }, [send]);
+  }, []);
 
-  const checkCode = useCallback(
-    (input: number) => {
-      send({
-        message: {
-          method: Method.AUTH,
-          address: "/code",
-          prop: "check",
-        },
-        codeOverride: input,
-      });
-    },
-    [send]
-  );
+  const checkCode = useCallback((input: number) => {
+    dispatch({
+      type: "checkCode",
+      payload: input,
+    });
+  }, []);
 
   return {
     candidates,
@@ -181,7 +173,6 @@ export const useSocket = ({
     reload,
     connected,
     connect,
-    send,
     error,
     code,
     checkCode,
