@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import { createContext, useReducer } from "react";
-import { SocketHost } from "./types";
+import { SendPayload, SocketHost } from "./types";
 import { Reducer } from "react";
 import { Dispatch } from "react";
 
@@ -9,10 +9,19 @@ export interface SocketState {
   host: SocketHost | null;
 }
 
-export interface SocketAction {
-  type: "connect" | "send" | "disconnect";
-  payload?: any;
+export interface SocketActions {
+  connect: SocketHost;
+  send: SendPayload;
+  setCode: number;
+  disconnect: null;
 }
+
+export type SocketAction = {
+  [Key in keyof SocketActions]: {
+    type: Key;
+    payload: SocketActions[Key];
+  };
+}[keyof SocketActions];
 
 export const initialState: SocketState = {
   code: null,

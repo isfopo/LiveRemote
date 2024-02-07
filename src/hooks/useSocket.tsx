@@ -1,20 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-
 import {
   IncomingMessage,
   Method,
   Status,
   SocketHost,
 } from "../context/socket/types";
-import { useAppDispatch } from "./useAppDispatch";
-import { useAppSelector } from "./useAppSelector";
-import { connectHost, send, setCode } from "../store/socket/slice";
-import {
-  SocketContext,
-  SocketDispatchContext,
-} from "../context/socket/SocketProvider";
-import { useContext } from "react";
-import { useReducer } from "react";
+import { send } from "../store/socket/slice";
 import { useSocketContext } from "../context/socket/useSocketContext";
 
 export interface UseSocketOptions {
@@ -124,7 +115,11 @@ export const useSocket = ({
   const connect = useCallback(
     (host: SocketHost) => {
       if (host.socket.OPEN) {
-        dispatch({});
+        dispatch({
+          type: "connect",
+          payload: host,
+        });
+
         setConnected(true);
 
         host.socket.onclose = () => {
@@ -137,7 +132,10 @@ export const useSocket = ({
           if (message.method === Method.AUTH) {
             if (message.address === "/code" && message.prop === "check") {
               if (message.status === Status.SUCCESS) {
-                dispatch(setCode(message.result as number));
+                dispatch({
+                  type: "setCode",
+                  payload: message.result as number,
+                });
               } else if (message.status === Status.FAILURE) {
                 setError(message.result as string);
               }
@@ -155,11 +153,12 @@ export const useSocket = ({
   );
 
   const showCode = useCallback(() => {
-    dispatch(
-      send({
+    dispatch({
+      type: "send",
+      payload: {
         message: { method: Method.AUTH, address: "/code", prop: "show" },
-      })
-    );
+      },
+    });
   }, [send]);
 
   const checkCode = useCallback(
