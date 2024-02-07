@@ -9,6 +9,13 @@ import {
 import { useAppDispatch } from "./useAppDispatch";
 import { useAppSelector } from "./useAppSelector";
 import { connectHost, send, setCode } from "../store/socket/slice";
+import {
+  SocketContext,
+  SocketDispatchContext,
+} from "../context/socket/SocketProvider";
+import { useContext } from "react";
+import { useReducer } from "react";
+import { useSocketContext } from "../context/socket/useSocketContext";
 
 export interface UseSocketOptions {
   onConnect?: () => void;
@@ -34,8 +41,10 @@ export const useSocket = ({
   high = 255,
   find = false,
 }: UseSocketOptions = {}) => {
-  const dispatch = useAppDispatch();
-  const { code } = useAppSelector((state) => state.socket);
+  const {
+    state: { code },
+    dispatch,
+  } = useSocketContext();
 
   const [candidates, setCandidates] = useState<SocketHost[]>([]);
 
@@ -115,7 +124,7 @@ export const useSocket = ({
   const connect = useCallback(
     (host: SocketHost) => {
       if (host.socket.OPEN) {
-        dispatch(connectHost(host));
+        dispatch({});
         setConnected(true);
 
         host.socket.onclose = () => {

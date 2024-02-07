@@ -14,14 +14,20 @@ export interface SocketAction {
   payload?: any;
 }
 
-const SocketContext = createContext<SocketState | null>(null);
-export const SocketDispatchContext =
-  createContext<Dispatch<SocketAction> | null>(null);
+export const initialState: SocketState = {
+  code: null,
+  host: null,
+};
 
-const socketReducer: Reducer<SocketState | null, SocketAction> = (
-  socket,
-  action
-) => {
+export const SocketContext = createContext<{
+  state: SocketState;
+  dispatch: Dispatch<SocketAction>;
+}>({
+  state: initialState,
+  dispatch: () => {},
+});
+
+const socketReducer: Reducer<SocketState, SocketAction> = (socket, action) => {
   switch (action.type) {
     default: {
       return socket;
@@ -30,13 +36,11 @@ const socketReducer: Reducer<SocketState | null, SocketAction> = (
 };
 
 export const SocketProvider = ({ children }: PropsWithChildren) => {
-  const [host, dispatch] = useReducer(socketReducer, null);
+  const [state, dispatch] = useReducer(socketReducer, initialState);
 
   return (
-    <SocketContext.Provider value={host}>
-      <SocketDispatchContext.Provider value={dispatch}>
-        {children}
-      </SocketDispatchContext.Provider>
+    <SocketContext.Provider value={{ state, dispatch }}>
+      {children}
     </SocketContext.Provider>
   );
 };
