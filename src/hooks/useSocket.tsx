@@ -35,9 +35,10 @@ export const useSocket = ({
   find = false,
 }: UseSocketOptions = {}) => {
   const dispatch = useAppDispatch();
-  const { host, code } = useAppSelector((state) => state.socket);
+  const { code } = useAppSelector((state) => state.socket);
 
   const [candidates, setCandidates] = useState<SocketHost[]>([]);
+
   const [loading, setLoading] = useState<boolean>(false);
 
   const [connected, setConnected] = useState<boolean>(false);
@@ -67,7 +68,7 @@ export const useSocket = ({
             if (message.address === "/socket" && message.prop === "info") {
               if (message.status === Status.SUCCESS) {
                 setCandidates((s) =>
-                  socket
+                  socket && !s.some((c) => c.url === socket.url)
                     ? [
                         ...s,
                         {
