@@ -1,9 +1,9 @@
 import { Text, YStack } from "tamagui";
 import { useSocket } from "./hooks/useSocket";
-import "./App.css";
 import { CodeInputModal } from "./components/modals/CodeInputModal";
 import { CandidateStack } from "./components/stacks/CandidateStack";
 import { useSocketContext } from "./context/socket/useSocketContext";
+import "./App.css";
 
 function App() {
   const { candidates, loading, connect, connected, showCode, code } = useSocket(
