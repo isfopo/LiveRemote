@@ -15,7 +15,6 @@
     "generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/vite.svg"
   },
   "dependencies": {
-    "@reduxjs/toolkit": "^2.1.0",
     "@tamagui/config": "^1.89.8",
     "@tamagui/vite-plugin": "^1.89.8",
     "@tamagui/web": "^1.89.8",
