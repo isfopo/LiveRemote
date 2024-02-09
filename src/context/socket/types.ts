@@ -11,13 +11,6 @@ export interface SocketActions {
   disconnect: null;
 }
 
-export type SocketAction = {
-  [Key in keyof SocketActions]: {
-    type: Key;
-    payload: SocketActions[Key];
-  };
-}[keyof SocketActions];
-
 export interface SocketHost {
   url: string;
   name: string;

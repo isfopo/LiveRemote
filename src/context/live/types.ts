@@ -13,10 +13,3 @@ export interface LiveActions {
   update: IncomingMessage;
   reset: null;
 }
-
-export type LiveAction = {
-  [Key in keyof LiveActions]: {
-    type: Key;
-    payload: LiveActions[Key];
-  };
-}[keyof LiveActions];

@@ -5,7 +5,8 @@ import {
   createContext,
   useReducer,
 } from "react";
-import { LiveAction, LiveState } from "./types";
+import { LiveActions, LiveState } from "./types";
+import { IActions } from "../types";
 
 export const initialState: LiveState = {
   song: {
@@ -16,13 +17,13 @@ export const initialState: LiveState = {
 
 export const LiveContext = createContext<{
   state: LiveState;
-  dispatch: Dispatch<LiveAction>;
+  dispatch: Dispatch<IActions<LiveActions>>;
 }>({
   state: initialState,
   dispatch: () => {},
 });
 
-const liveReducer: Reducer<LiveState, LiveAction> = (
+const liveReducer: Reducer<LiveState, IActions<LiveActions>> = (
   state,
   { type, payload }
 ) => {

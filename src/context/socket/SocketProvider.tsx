@@ -1,8 +1,9 @@
 import { PropsWithChildren } from "react";
 import { createContext, useReducer } from "react";
-import { Method, SocketAction, SocketState } from "./types";
+import { Method, SocketActions, SocketState } from "./types";
 import { Reducer } from "react";
 import { Dispatch } from "react";
+import { IActions } from "../types";
 
 export const initialState: SocketState = {
   code: null,
@@ -11,13 +12,13 @@ export const initialState: SocketState = {
 
 export const SocketContext = createContext<{
   state: SocketState;
-  dispatch: Dispatch<SocketAction>;
+  dispatch: Dispatch<IActions<SocketActions>>;
 }>({
   state: initialState,
   dispatch: () => {},
 });
 
-const socketReducer: Reducer<SocketState, SocketAction> = (
+const socketReducer: Reducer<SocketState, IActions<SocketActions>> = (
   state,
   { type, payload }
 ) => {
