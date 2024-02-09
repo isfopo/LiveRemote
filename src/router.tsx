@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Layout } from "./views/Layout";
-import { Index } from "./views/Index";
+import { Home } from "./views/Home";
 import { Connect } from "./views/Connect";
 import { Remote } from "./views/Remote";
 
@@ -11,7 +11,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Index />,
+        element: <Home />,
       },
       {
         path: "remote",
