@@ -1,3 +1,22 @@
+export interface SocketState {
+  code: number | null;
+  host: SocketHost | null;
+}
+
+export interface SocketActions {
+  connect: SocketHost;
+  send: SendPayload;
+  checkCode: number;
+  setCode: number;
+  disconnect: null;
+}
+
+export type SocketAction = {
+  [Key in keyof SocketActions]: {
+    type: Key;
+    payload: SocketActions[Key];
+  };
+}[keyof SocketActions];
 
 export interface SocketHost {
   url: string;
@@ -61,9 +80,4 @@ export interface OutgoingMessage extends Message {
   value?: string | number | boolean;
   /** Overrides typeof for python friendly types */
   type?: "int" | "float" | "string" | "boolean";
-}
-
-export interface SendOptions {
-  codeOverride?: number;
-  bypassCode?: boolean;
 }

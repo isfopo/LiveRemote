@@ -1,28 +1,8 @@
 import { PropsWithChildren } from "react";
 import { createContext, useReducer } from "react";
-import { Method, SendPayload, SocketHost } from "./types";
+import { Method, SocketAction, SocketState } from "./types";
 import { Reducer } from "react";
 import { Dispatch } from "react";
-
-export interface SocketState {
-  code: number | null;
-  host: SocketHost | null;
-}
-
-export interface SocketActions {
-  connect: SocketHost;
-  send: SendPayload;
-  checkCode: number;
-  setCode: number;
-  disconnect: null;
-}
-
-export type SocketAction = {
-  [Key in keyof SocketActions]: {
-    type: Key;
-    payload: SocketActions[Key];
-  };
-}[keyof SocketActions];
 
 export const initialState: SocketState = {
   code: null,
