@@ -1,17 +1,13 @@
-import { Text } from "tamagui";
 import { CodeInputModal } from "../../components/modals/CodeInputModal";
 import { CandidateStack } from "../../components/stacks/CandidateStack";
 import { useSocketContext } from "../../context/socket/useSocketContext";
 import { useSocket } from "../../hooks/useSocket";
 
-export interface ConnectProps {}
-
-export const Connect = ({}: ConnectProps) => {
-  const { candidates, loading, connect, connected, showCode, code } = useSocket(
-    {
+export const Connect = () => {
+  const { candidates, loading, connect, connected, showCode, code, checkCode } =
+    useSocket({
       find: true,
-    }
-  );
+    });
 
   const { dispatch } = useSocketContext();
 
@@ -20,10 +16,11 @@ export const Connect = ({}: ConnectProps) => {
       <CodeInputModal
         open={connected && !code}
         showCode={showCode}
+        checkCode={checkCode}
         onClose={() => dispatch({ type: "disconnect", payload: null })}
       />
-      <Text>LiveRemote</Text>
-      <Text>{loading ? "searching" : ""}</Text>
+      <p>LiveRemote</p>
+      <p>{loading ? "searching" : ""}</p>
       <CandidateStack candidates={candidates} connect={connect} />
     </>
   );
