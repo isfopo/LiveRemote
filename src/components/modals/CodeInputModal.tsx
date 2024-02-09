@@ -1,15 +1,24 @@
-import { Button, Dialog, Fieldset, Input, Label, Unspaced } from "tamagui";
+import { useCallback, useState } from "react";
+import { Dialog } from "@ariakit/react";
 
 export interface CodeInputModalProps {
   open: boolean;
   showCode: () => void;
+  checkCode: (code: number) => void;
   onClose: () => void;
 }
 
-export const CodeInputModal = ({ open, onClose }: CodeInputModalProps) => {
+export const CodeInputModal = ({
+  open,
+  showCode,
+  checkCode,
+  onClose,
+}: CodeInputModalProps) => {
+  const [code, setCode] = useState<string>("");
+
   return (
     <Dialog modal open={open}>
-      <Dialog.Portal>
+      {/* <Dialog.Portal>
         <Dialog.Overlay
           key="overlay"
           opacity={0.5}
@@ -42,10 +51,17 @@ export const CodeInputModal = ({ open, onClose }: CodeInputModalProps) => {
           </Dialog.Description>
 
           <Fieldset gap="$4" horizontal>
+            <Button onPress={showCode}>Show code</Button>
             <Label display="none" aria-hidden htmlFor="code">
               Code
             </Label>
-            <Input flex={2} flexGrow={1} id="code" />
+            <Input flex={2} flexGrow={1} id="code" value={code} />
+          </Fieldset>
+
+          <Fieldset horizontal>
+            <Button flexGrow={1} onPress={() => checkCode(code)}>
+              Connect
+            </Button>
           </Fieldset>
 
           <Unspaced>
@@ -63,7 +79,7 @@ export const CodeInputModal = ({ open, onClose }: CodeInputModalProps) => {
             </Dialog.Close>
           </Unspaced>
         </Dialog.Content>
-      </Dialog.Portal>
+      </Dialog.Portal> */}
     </Dialog>
   );
 };

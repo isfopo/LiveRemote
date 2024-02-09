@@ -1,5 +1,5 @@
-import { Button, YStack } from "tamagui";
 import { SocketHost } from "../../context/socket/types";
+import { Button } from "../buttons/Button";
 
 export interface CandidateStackProps {
   connect: (host: SocketHost) => void;
@@ -11,12 +11,12 @@ export const CandidateStack = ({
   connect,
 }: CandidateStackProps) => {
   return (
-    <YStack gap={1}>
+    <>
       {candidates.map((candidate) => (
-        <Button key={candidate.url} onPress={() => connect(candidate)}>
+        <Button key={candidate.url} onClick={() => connect(candidate)}>
           {candidate.name}
         </Button>
       ))}
-    </YStack>
+    </>
   );
 };
