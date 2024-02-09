@@ -27,6 +27,9 @@ const liveReducer: Reducer<LiveState, LiveAction> = (
   { type, payload }
 ) => {
   switch (type) {
+    case "update":
+      // parse incoming message to update the Live state
+      return state;
     case "reset":
       return initialState;
     default:

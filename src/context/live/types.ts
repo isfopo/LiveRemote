@@ -1,3 +1,5 @@
+import { IncomingMessage } from "../socket/types";
+
 export type LiveState = {
   song: Song;
 };
@@ -8,6 +10,7 @@ export type Song = {
 };
 
 export interface LiveActions {
+  update: IncomingMessage;
   reset: null;
 }
 
