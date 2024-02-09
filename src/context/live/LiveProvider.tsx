@@ -37,7 +37,7 @@ const liveReducer: Reducer<LiveState, LiveAction> = (
   }
 };
 
-export const SocketProvider = ({ children }: PropsWithChildren) => {
+export const LiveProvider = ({ children }: PropsWithChildren) => {
   const [state, dispatch] = useReducer(liveReducer, initialState);
 
   return (

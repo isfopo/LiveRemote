@@ -7,18 +7,18 @@ import { TamaguiProvider } from "tamagui";
 import config from "../tamagui.config.ts";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
-import { SocketProvider } from "./context/socket/SocketProvider.tsx";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./router.tsx";
+import { ContextProvider } from "./context/ContextProvider.tsx";
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <Provider store={store}>
     <React.StrictMode>
-      <SocketProvider>
+      <ContextProvider>
         <TamaguiProvider config={config}>
           <RouterProvider router={router} />
         </TamaguiProvider>
-      </SocketProvider>
+      </ContextProvider>
     </React.StrictMode>
   </Provider>
 );
