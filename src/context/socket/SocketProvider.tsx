@@ -45,7 +45,7 @@ const socketReducer: Reducer<SocketState, IActions<SocketActions>> = (
         ...state,
         code: payload,
       };
-    case "send":
+    case "send": {
       const { message } = payload;
       const getType = () => {
         if (!message.value) return null;
@@ -64,6 +64,7 @@ const socketReducer: Reducer<SocketState, IActions<SocketActions>> = (
         );
       }
       return state;
+    }
     case "disconnect":
       if (state.host) {
         state.host.socket.close();

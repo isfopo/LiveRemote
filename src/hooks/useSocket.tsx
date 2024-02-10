@@ -6,6 +6,7 @@ import {
   SocketHost,
 } from "../context/socket/types";
 import { useSocketContext } from "../context/socket/useSocketContext";
+import { useDialogContext } from "../context/dialog/useDialogContext";
 
 export interface UseSocketOptions {
   onConnect?: () => void;
@@ -33,7 +34,7 @@ export const useSocket = ({
 }: UseSocketOptions = {}) => {
   const {
     state: { code },
-    dispatch,
+    dispatch: socketDispatch,
   } = useSocketContext();
 
   const [candidates, setCandidates] = useState<SocketHost[]>([]);
@@ -58,7 +59,7 @@ export const useSocket = ({
         const socket = new WebSocket(`ws://${base}.${ip}:${port}`);
 
         socket.onopen = () => {
-          onConnect?.();
+          // onConnect?.();
         };
 
         socket.onmessage = (e) => {
@@ -114,10 +115,12 @@ export const useSocket = ({
   const connect = useCallback(
     (host: SocketHost) => {
       if (host.socket.OPEN) {
-        dispatch({
+        socketDispatch({
           type: "connect",
           payload: host,
         });
+
+        onConnect?.();
 
         setConnected(true);
 
@@ -131,7 +134,7 @@ export const useSocket = ({
           if (message.method === Method.AUTH) {
             if (message.address === "/code" && message.prop === "check") {
               if (message.status === Status.SUCCESS) {
-                dispatch({
+                socketDispatch({
                   type: "setCode",
                   payload: message.result as number,
                 });
@@ -152,7 +155,7 @@ export const useSocket = ({
   );
 
   const showCode = useCallback(() => {
-    dispatch({
+    socketDispatch({
       type: "send",
       payload: {
         message: { method: Method.AUTH, address: "/code", prop: "show" },
@@ -161,7 +164,7 @@ export const useSocket = ({
   }, []);
 
   const checkCode = useCallback((input: number) => {
-    dispatch({
+    socketDispatch({
       type: "checkCode",
       payload: input,
     });
