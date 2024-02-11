@@ -22,7 +22,7 @@ export interface SendPayload {
 
 export interface SocketActions {
 	found: Candidate[];
-	connect: Candidate;
+	connect: SocketHost;
 	send: SendPayload;
 	checkCode: number;
 	setCode: number;

@@ -38,15 +38,10 @@ const socketReducer: Reducer<SocketState, IActions<SocketActions>> = (
       };
     }
     case "connect": {
-      const socket = new WebSocket(payload.url);
-
-      // add event listeners
-
       return {
         ...state,
         host: {
           ...payload,
-          socket,
         },
         connected: true,
         loading: false,

@@ -14,7 +14,7 @@ export const Remote = () => {
 
   const { dispatch: dialogDispatch } = useDialogContext();
 
-  const { find } = useFindCandidates();
+  const { find, connect } = useFindCandidates({ auto: true });
 
   useEffect(() => {
     if (candidates && candidates.length > 0) {
@@ -22,7 +22,7 @@ export const Remote = () => {
         type: "open",
         payload: {
           id: "connect",
-          component: <ConnectDialog />,
+          component: <ConnectDialog connect={connect} />,
           onClose: () => socketDispatch({ type: "reset", payload: null }),
         },
       });

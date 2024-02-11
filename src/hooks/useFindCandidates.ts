@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import {
 	Candidate,
 	IncomingMessage,
@@ -9,6 +9,8 @@ import { useSocketContext } from "../context/socket/useSocketContext";
 import { range } from "../helpers/arrays";
 
 export interface UseFindCandidatesOptions {
+	/** If set to true, it will automatically find sockets */
+	auto?: boolean;
 	port?: number;
 	base?: string;
 	low?: number;
@@ -16,6 +18,7 @@ export interface UseFindCandidatesOptions {
 }
 
 export const useFindCandidates = ({
+	auto = false,
 	port = 8000,
 	base = "192.168.1",
 	low = 0,
@@ -50,6 +53,7 @@ export const useFindCandidates = ({
 									url: socket.url,
 									name: message.result as string,
 								});
+								socket.close();
 							} else {
 								reject();
 							}
@@ -73,8 +77,37 @@ export const useFindCandidates = ({
 	};
 
 	useEffect(() => {
-		find();
+		if (auto) {
+			find();
+		}
 	}, []);
 
-	return { find };
+	const connect = useCallback((candidate: Candidate) => {
+		// open socket connection here
+		const socket = new WebSocket(candidate.url);
+
+		// add event listeners
+		socket.onopen = () => {
+			console.log("opened");
+		};
+		socket.onmessage = (e) => {
+			console.log("message", e.data);
+		};
+		socket.onclose = () => {
+			console.log("closed");
+		};
+		socket.onerror = () => {
+			console.log("error");
+		};
+
+		dispatch({
+			type: "connect",
+			payload: {
+				...candidate,
+				socket,
+			},
+		});
+	}, []);
+
+	return { find, connect };
 };
