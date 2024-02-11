@@ -1,13 +1,26 @@
 import { PropsWithChildren } from "react";
 import { createContext, useReducer } from "react";
-import { Method, SocketActions, SocketState } from "./types";
+import {
+  Candidate,
+  IncomingMessage,
+  Method,
+  SocketActions,
+  SocketHost,
+  SocketState,
+  Status,
+} from "./types";
 import { Reducer } from "react";
 import { Dispatch } from "react";
 import { IActions } from "../types";
+import { range } from "../../helpers/arrays";
 
 export const initialState: SocketState = {
   code: null,
   host: null,
+  candidates: [],
+  loading: false,
+  connected: false,
+  error: undefined,
 };
 
 export const SocketContext = createContext<{
@@ -23,11 +36,77 @@ const socketReducer: Reducer<SocketState, IActions<SocketActions>> = (
   { type, payload }
 ) => {
   switch (type) {
-    case "connect":
+    case "find": {
+      const { port = 8000, base = "192.168.1", high = 255, low = 0 } = payload;
+      const promises: Promise<Candidate>[] = [];
+      let candidates: SocketHost[] = [];
+
+      for (const ip in range(high - low, low)) {
+        promises.push(
+          new Promise((resolve, reject) => {
+            try {
+              const socket = new WebSocket(`ws://${base}.${ip}:${port}`);
+
+              socket.onopen = () => {
+                // onConnect?.();
+              };
+
+              socket.onmessage = (e) => {
+                const message = JSON.parse(e.data) as IncomingMessage;
+                if (
+                  message.method === Method.AUTH &&
+                  message.address === "/socket" &&
+                  message.prop === "info" &&
+                  message.status === Status.SUCCESS &&
+                  socket
+                ) {
+                  resolve({
+                    url: socket.url,
+                    name: message.result as string,
+                  });
+                } else {
+                  reject();
+                }
+              };
+              socket.onerror = () => {
+                reject();
+              };
+            } catch {
+              reject();
+            }
+          })
+        );
+      }
+
+      Promise.allSettled(promises).then((results) => {
+        candidates = (
+          results.filter(
+            (result) => result.status === "fulfilled"
+          ) as PromiseFulfilledResult<SocketHost>[]
+        ).map((r) => r.value);
+      });
+
       return {
         ...state,
-        host: payload,
+        candidates,
+        loading: false,
       };
+    }
+    case "connect": {
+      const socket = new WebSocket(payload.url);
+
+      // add event listeners
+
+      return {
+        ...state,
+        host: {
+          ...payload,
+          socket,
+        },
+        connected: true,
+        loading: false,
+      };
+    }
     case "checkCode":
       if (state.host?.socket) {
         state.host.socket.send(
@@ -69,6 +148,7 @@ const socketReducer: Reducer<SocketState, IActions<SocketActions>> = (
       if (state.host) {
         state.host.socket.close();
         return {
+          ...state,
           code: null,
           host: null,
         };

@@ -1,14 +1,10 @@
 export interface SocketState {
   code: number | null;
   host: SocketHost | null;
-}
-
-export interface SocketActions {
-  connect: SocketHost;
-  send: SendPayload;
-  checkCode: number;
-  setCode: number;
-  disconnect: null;
+  candidates: Candidate[];
+  loading: boolean;
+  connected: boolean;
+  error: string | undefined;
 }
 
 export interface SocketHost {
@@ -17,20 +13,32 @@ export interface SocketHost {
   socket: WebSocket;
 }
 
+export type Candidate = Omit<SocketHost, 'socket'>
+
+
 export interface FindPayload {
-  port: number;
+  port?: number;
   base?: string;
   low?: number;
   high?: number;
   maxConcurrentTests?: number;
   timeout?: number;
-  lazyLoad?: boolean;
 }
 
 export interface SendPayload {
   message: OutgoingMessage;
   codeOverride?: number;
 }
+
+export interface SocketActions {
+  find: FindPayload;
+  connect: Candidate;
+  send: SendPayload;
+  checkCode: number;
+  setCode: number;
+  disconnect: null;
+}
+
 
 export enum Method {
   /** Used to check client code */
