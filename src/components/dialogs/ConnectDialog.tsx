@@ -7,8 +7,6 @@ export const ConnectDialog = () => {
     dispatch,
   } = useSocketContext();
 
-  console.log(candidates);
-
   return (
     <>
       <p>Connect to your set</p>

@@ -15,23 +15,13 @@ export interface SocketHost {
 
 export type Candidate = Omit<SocketHost, 'socket'>
 
-
-export interface FindPayload {
-  port?: number;
-  base?: string;
-  low?: number;
-  high?: number;
-  maxConcurrentTests?: number;
-  timeout?: number;
-}
-
 export interface SendPayload {
   message: OutgoingMessage;
   codeOverride?: number;
 }
 
 export interface SocketActions {
-  find: FindPayload;
+  found: Candidate[];
   connect: Candidate;
   send: SendPayload;
   checkCode: number;

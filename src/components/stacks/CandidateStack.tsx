@@ -1,4 +1,4 @@
-import { Candidate, SocketHost } from "../../context/socket/types";
+import { Candidate } from "../../context/socket/types";
 import { Button } from "../buttons/Button";
 
 export interface CandidateStackProps {

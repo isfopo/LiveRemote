@@ -1,8 +1,9 @@
-import { useSocketContext } from "../../context/socket/useSocketContext";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import { useDialogContext } from "../../context/dialog/useDialogContext";
 import { ConnectDialog } from "../../components/dialogs/ConnectDialog";
+import { useDialogContext } from "../../context/dialog/useDialogContext";
+import { useSocketContext } from "../../context/socket/useSocketContext";
+import { useFindCandidates } from "../../hooks/useFindCandidates";
 
 export const Remote = () => {
   const {
@@ -12,11 +13,7 @@ export const Remote = () => {
 
   const { dispatch: dialogDispatch } = useDialogContext();
 
-  useEffect(() => {
-    if (!host) {
-      socketDispatch({ type: "find", payload: {} });
-    }
-  }, []);
+  useFindCandidates({});
 
   useEffect(() => {
     if (candidates && candidates.length > 0) {
@@ -28,7 +25,7 @@ export const Remote = () => {
         },
       });
     }
-  });
+  }, [candidates]);
 
   return (
     <>

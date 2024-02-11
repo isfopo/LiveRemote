@@ -1,18 +1,12 @@
-import { PropsWithChildren } from "react";
-import { createContext, useReducer } from "react";
 import {
-  Candidate,
-  IncomingMessage,
-  Method,
-  SocketActions,
-  SocketHost,
-  SocketState,
-  Status,
-} from "./types";
-import { Reducer } from "react";
-import { Dispatch } from "react";
+  Dispatch,
+  PropsWithChildren,
+  Reducer,
+  createContext,
+  useReducer,
+} from "react";
 import { IActions } from "../types";
-import { range } from "../../helpers/arrays";
+import { Method, SocketActions, SocketState } from "./types";
 
 export const initialState: SocketState = {
   code: null,
@@ -36,59 +30,10 @@ const socketReducer: Reducer<SocketState, IActions<SocketActions>> = (
   { type, payload }
 ) => {
   switch (type) {
-    case "find": {
-      const { port = 8000, base = "192.168.1", high = 255, low = 0 } = payload;
-      const promises: Promise<Candidate>[] = [];
-      let candidates: SocketHost[] = [];
-
-      for (const ip in range(high - low, low)) {
-        promises.push(
-          new Promise((resolve, reject) => {
-            try {
-              const socket = new WebSocket(`ws://${base}.${ip}:${port}`);
-
-              socket.onopen = () => {
-                // onConnect?.();
-              };
-
-              socket.onmessage = (e) => {
-                const message = JSON.parse(e.data) as IncomingMessage;
-                if (
-                  message.method === Method.AUTH &&
-                  message.address === "/socket" &&
-                  message.prop === "info" &&
-                  message.status === Status.SUCCESS &&
-                  socket
-                ) {
-                  resolve({
-                    url: socket.url,
-                    name: message.result as string,
-                  });
-                } else {
-                  reject();
-                }
-              };
-              socket.onerror = () => {
-                reject();
-              };
-            } catch {
-              reject();
-            }
-          })
-        );
-      }
-
-      Promise.allSettled(promises).then((results) => {
-        candidates = (
-          results.filter(
-            (result) => result.status === "fulfilled"
-          ) as PromiseFulfilledResult<SocketHost>[]
-        ).map((r) => r.value);
-      });
-
+    case "found": {
       return {
         ...state,
-        candidates,
+        candidates: payload,
         loading: false,
       };
     }

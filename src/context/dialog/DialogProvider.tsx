@@ -5,8 +5,8 @@ import {
   createContext,
   useReducer,
 } from "react";
-import { DialogActions, DialogState } from "./types";
 import { IActions } from "../types";
+import { DialogActions, DialogState } from "./types";
 
 export const initialState: DialogState = {
   activeDialog: null,
@@ -27,6 +27,7 @@ const dialogReducer: Reducer<DialogState, IActions<DialogActions>> = (
 ) => {
   switch (type) {
     case "open":
+      console.log("open", payload);
       return {
         previousDialog: state.activeDialog,
         activeDialog: payload,
