@@ -27,7 +27,6 @@ const dialogReducer: Reducer<DialogState, IActions<DialogActions>> = (
 ) => {
   switch (type) {
     case "open":
-      console.log("open", payload);
       return {
         previousDialog: state.activeDialog,
         activeDialog: payload,
