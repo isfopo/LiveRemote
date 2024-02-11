@@ -1,9 +1,9 @@
-import { SocketHost } from "../../context/socket/types";
+import { Candidate, SocketHost } from "../../context/socket/types";
 import { Button } from "../buttons/Button";
 
 export interface CandidateStackProps {
-  connect: (host: SocketHost) => void;
-  candidates: SocketHost[];
+  connect: (host: Candidate) => void;
+  candidates: Candidate[];
 }
 
 export const CandidateStack = ({
