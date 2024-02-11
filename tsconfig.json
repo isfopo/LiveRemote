@@ -21,9 +21,7 @@
 		"noFallthroughCasesInSwitch": true,
 
 		"forceConsistentCasingInFileNames": true,
-		"esModuleInterop": true,
-
-		"baseUrl": "src"
+		"esModuleInterop": true
 	},
 	"include": ["src"]
 }
