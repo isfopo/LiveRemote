@@ -89,6 +89,9 @@ const socketReducer: Reducer<SocketState, IActions<SocketActions>> = (
       }
       return state;
     }
+    case "reset": {
+      return initialState;
+    }
     case "disconnect":
       if (state.host) {
         state.host.socket.close();

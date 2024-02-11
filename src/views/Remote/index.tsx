@@ -23,6 +23,7 @@ export const Remote = () => {
         payload: {
           id: "connect",
           component: <ConnectDialog />,
+          onClose: () => socketDispatch({ type: "reset", payload: null }),
         },
       });
     }
@@ -36,6 +37,7 @@ export const Remote = () => {
 
   return (
     <>
+      <p>Remote</p>
       <Outlet />
     </>
   );
