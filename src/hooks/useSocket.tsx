@@ -46,6 +46,9 @@ export const useSocket = ({
   }, [host]);
 
   const find = async () => {
+    setLoading(true);
+    setCandidates([]);
+
     for (const ip in range(high - low, low)) {
       const socket = new WebSocket(`ws://${base}.${ip}:${port}`);
 
@@ -144,12 +147,6 @@ export const useSocket = ({
     );
   }, []);
 
-  const reload = useCallback(() => {
-    setLoading(true);
-    setCandidates([]);
-    find();
-  }, [find]);
-
   const disconnect = useCallback(() => {
     host?.socket.close();
     setCandidates([]);
@@ -166,7 +163,6 @@ export const useSocket = ({
     find,
     send,
     connect,
-    reload,
     disconnect,
     checkCode,
     showCode,
