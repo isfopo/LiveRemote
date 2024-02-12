@@ -1,4 +1,5 @@
 from typing import Dict, Union
+
 import Live
 
 
@@ -11,7 +12,7 @@ class ClientCodes:
 
     def new(self, client_id):
         self._map[client_id] = Live.Application.get_random_int(  # type: ignore
-            100000, 999999
+            1000, 9999
         )
 
     def remove(self, client_id: int):
