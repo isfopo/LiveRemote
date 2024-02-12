@@ -135,7 +135,7 @@ export const useSocket = ({
 
   const showCode = useCallback(() => {
     send({ method: Method.AUTH, address: "/code", prop: "show" });
-  }, []);
+  }, [send]);
 
   const checkCode = useCallback((input: number) => {
     host?.socket.send(

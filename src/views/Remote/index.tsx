@@ -33,7 +33,7 @@ export const Remote = () => {
         },
       });
     }
-  }, [candidates, host]);
+  }, [candidates, host, showCode, connect]);
 
   if (candidates.length === 0 && !host) {
     return (
