@@ -1,5 +1,6 @@
-from .Method import Method
 from typing import Any, Union
+
+from .Method import Method
 
 
 class IncomingMessage:
@@ -37,11 +38,11 @@ class IncomingMessage:
             self.address = self.payload["address"]
             self.prop = self.payload["prop"]
             self.type = self.payload["type"]
-            if self.payload["code"] is not None:
-                try:
+            try:
+                if self.payload["code"] is not None:
                     self.code = int(self.payload["code"])
-                except (ValueError, KeyError):
-                    self.code = None
+            except (ValueError, KeyError):
+                self.code = None
 
     @property
     def value(self):
