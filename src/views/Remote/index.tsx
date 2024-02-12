@@ -8,7 +8,7 @@ import { useSocket } from "../../hooks/useSocket";
 export const Remote = () => {
   const { dispatch: dialogDispatch } = useDialogContext();
 
-  const { find, connect, candidates, host, showCode } = useSocket({
+  const { find, connect, candidates, host, showCode, disconnect } = useSocket({
     auto: true,
   });
 
@@ -26,7 +26,7 @@ export const Remote = () => {
               showCode={showCode}
             />
           ),
-          onClose: () => {},
+          onClose: disconnect,
         },
       });
     }

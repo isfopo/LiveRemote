@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { range } from "../helpers/arrays";
 import {
   Candidate,
@@ -37,8 +37,13 @@ export const useSocket = ({
   const [host, setHost] = useState<SocketHost | null>(null);
   const [code, setCode] = useState<number | null>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [connected, setConnected] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>();
+
+  const connected = useMemo<boolean>(() => {
+    if (!host || !host.socket || !code) return false;
+
+    return host.socket.readyState === WebSocket.OPEN;
+  }, [host]);
 
   const find = async () => {
     for (const ip in range(high - low, low)) {
@@ -73,18 +78,11 @@ export const useSocket = ({
     }
   }, []);
 
-  const reload = useCallback(() => {
-    setLoading(true);
-    setCandidates([]);
-    find();
-  }, [find]);
-
   const connect = useCallback(
     (candidate: Candidate) => {
       const socket = new WebSocket(candidate.url);
 
       socket.onclose = () => {
-        setConnected(false);
         onDisconnect?.();
       };
 
@@ -113,8 +111,6 @@ export const useSocket = ({
       });
 
       onConnect?.();
-
-      setConnected(true);
     },
     [onConnect, onDisconnect, onError, onMessage]
   );
@@ -148,17 +144,30 @@ export const useSocket = ({
     );
   }, []);
 
+  const reload = useCallback(() => {
+    setLoading(true);
+    setCandidates([]);
+    find();
+  }, [find]);
+
+  const disconnect = useCallback(() => {
+    host?.socket.close();
+    setCandidates([]);
+    setHost(null);
+  }, [host]);
+
   return {
     candidates,
     host,
     loading,
-    reload,
-    find,
-    send,
     connected,
-    connect,
     error,
     code,
+    find,
+    send,
+    connect,
+    reload,
+    disconnect,
     checkCode,
     showCode,
   };
