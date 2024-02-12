@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { range } from "../helpers/arrays";
 import {
   Candidate,
   IncomingMessage,
@@ -6,8 +7,7 @@ import {
   OutgoingMessage,
   SocketHost,
   Status,
-} from "../context/socket/types";
-import { range } from "../helpers/arrays";
+} from "../types/socket";
 
 export interface UseSocketOptions {
   onConnect?: () => void;

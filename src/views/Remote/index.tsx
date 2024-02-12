@@ -3,12 +3,9 @@ import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { ConnectDialog } from "../../components/dialogs/ConnectDialog";
 import { useDialogContext } from "../../context/dialog/useDialogContext";
-import { useSocketContext } from "../../context/socket/useSocketContext";
 import { useSocket } from "../../hooks/useSocket";
 
 export const Remote = () => {
-  const { dispatch: socketDispatch } = useSocketContext();
-
   const { dispatch: dialogDispatch } = useDialogContext();
 
   const { find, connect, candidates, host, showCode } = useSocket({
@@ -29,7 +26,7 @@ export const Remote = () => {
               showCode={showCode}
             />
           ),
-          onClose: () => socketDispatch({ type: "reset", payload: null }),
+          onClose: () => {},
         },
       });
     }
