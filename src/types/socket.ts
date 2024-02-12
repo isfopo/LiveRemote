@@ -1,12 +1,3 @@
-export interface SocketState {
-	code: number | null;
-	host: SocketHost | null;
-	candidates: Candidate[];
-	loading: boolean;
-	connected: boolean;
-	error: string | undefined;
-}
-
 export interface SocketHost {
 	url: string;
 	name: string;
