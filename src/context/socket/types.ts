@@ -15,15 +15,10 @@ export interface SocketHost {
 
 export type Candidate = Omit<SocketHost, "socket">;
 
-export interface SendPayload {
-	message: OutgoingMessage;
-	codeOverride?: number;
-}
-
 export interface SocketActions {
 	found: Candidate[];
 	connect: SocketHost;
-	send: SendPayload;
+	send: OutgoingMessage;
 	checkCode: number;
 	setCode: number;
 	/**Removes all candidates */

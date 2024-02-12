@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  Candidate,
   IncomingMessage,
   Method,
-  Status,
+  OutgoingMessage,
   SocketHost,
+  Status,
 } from "../context/socket/types";
-import { useSocketContext } from "../context/socket/useSocketContext";
-import { useDialogContext } from "../context/dialog/useDialogContext";
+import { range } from "../helpers/arrays";
 
 export interface UseSocketOptions {
   onConnect?: () => void;
@@ -18,7 +19,7 @@ export interface UseSocketOptions {
   low?: number;
   high?: number;
   maxConcurrentTests?: number;
-  find?: boolean;
+  auto?: boolean;
 }
 
 export const useSocket = ({
@@ -30,150 +31,130 @@ export const useSocket = ({
   base = "192.168.1",
   low = 0,
   high = 255,
-  find = false,
+  auto = false,
 }: UseSocketOptions = {}) => {
-  const {
-    state: { code },
-    dispatch: socketDispatch,
-  } = useSocketContext();
-
-  const [candidates, setCandidates] = useState<SocketHost[]>([]);
-
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [host, setHost] = useState<SocketHost | null>(null);
+  const [code, setCode] = useState<number | null>();
   const [loading, setLoading] = useState<boolean>(false);
-
   const [connected, setConnected] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>();
 
-  const findSocket = useCallback(() => {
-    setLoading(true);
-    let index = low;
+  const find = async () => {
+    for (const ip in range(high - low, low)) {
+      const socket = new WebSocket(`ws://${base}.${ip}:${port}`);
 
-    const next = () => {
-      while (index <= high) {
-        tryOne(index++);
-      }
-    };
+      socket.onmessage = (e) => {
+        const message = JSON.parse(e.data) as IncomingMessage;
 
-    const tryOne = (ip: number) => {
-      try {
-        const socket = new WebSocket(`ws://${base}.${ip}:${port}`);
-
-        socket.onopen = () => {
-          // onConnect?.();
-        };
-
-        socket.onmessage = (e) => {
-          const message = JSON.parse(e.data) as IncomingMessage;
-          if (message.method === Method.AUTH) {
-            if (message.address === "/socket" && message.prop === "info") {
-              if (message.status === Status.SUCCESS) {
-                setCandidates((s) =>
-                  socket && !s.some((c) => c.url === socket.url)
-                    ? [
-                        ...s,
-                        {
-                          url: socket.url,
-                          name: message.result as string,
-                          socket,
-                        },
-                      ]
-                    : s
-                );
-              }
-            }
-          }
-        };
-
-        socket.onerror = () => {
-          done();
-          next();
-        };
-      } catch {}
-    };
-
-    const done = () => {
-      if (index > high) {
-        setLoading(false);
-      }
-    };
-
-    next();
-  }, [base, high, port, candidates]);
+        if (
+          message.method === Method.AUTH &&
+          message.address === "/socket" &&
+          message.prop === "info" &&
+          message.status === Status.SUCCESS &&
+          socket
+        ) {
+          setCandidates((c) => [
+            ...c,
+            {
+              url: socket.url,
+              name: message.result as string,
+            },
+          ]);
+          socket.close();
+        }
+      };
+    }
+  };
 
   useEffect(() => {
-    if (find && !connected) {
-      findSocket();
+    if (auto) {
+      find();
     }
   }, []);
 
   const reload = useCallback(() => {
     setLoading(true);
     setCandidates([]);
-    findSocket();
-  }, [findSocket]);
+    find();
+  }, [find]);
 
   const connect = useCallback(
-    (host: SocketHost) => {
-      if (host.socket.OPEN) {
-        socketDispatch({
-          type: "connect",
-          payload: host,
-        });
+    (candidate: Candidate) => {
+      const socket = new WebSocket(candidate.url);
 
-        onConnect?.();
+      socket.onclose = () => {
+        setConnected(false);
+        onDisconnect?.();
+      };
 
-        setConnected(true);
-
-        host.socket.onclose = () => {
-          setConnected(false);
-          onDisconnect?.();
-        };
-
-        host.socket.onmessage = (e) => {
-          const message = JSON.parse(e.data) as IncomingMessage;
-          if (message.method === Method.AUTH) {
-            if (message.address === "/code" && message.prop === "check") {
-              if (message.status === Status.SUCCESS) {
-                socketDispatch({
-                  type: "setCode",
-                  payload: message.result as number,
-                });
-              } else if (message.status === Status.FAILURE) {
-                setError(message.result as string);
-              }
+      socket.onmessage = (e) => {
+        const message = JSON.parse(e.data) as IncomingMessage;
+        if (message.method === Method.AUTH) {
+          if (message.address === "/code" && message.prop === "check") {
+            if (message.status === Status.SUCCESS) {
+              setCode(message.result as number);
+            } else if (message.status === Status.FAILURE) {
+              setError(message.result as string);
             }
           }
+        } else {
           onMessage?.(message);
-        };
+        }
+      };
 
-        host.socket.onerror = (e) => {
-          onError?.(e);
-        };
-      }
+      socket.onerror = (e) => {
+        onError?.(e);
+      };
+
+      setHost({
+        ...candidate,
+        socket,
+      });
+
+      onConnect?.();
+
+      setConnected(true);
     },
     [onConnect, onDisconnect, onError, onMessage]
   );
 
+  const send = useCallback(
+    (message: OutgoingMessage) => {
+      const getType = () => {
+        if (!message.value) return null;
+        return message.type ?? typeof message.value === "number"
+          ? "int"
+          : typeof message.value;
+      };
+
+      host?.socket.send(JSON.stringify({ ...message, type: getType(), code }));
+    },
+    [host]
+  );
+
   const showCode = useCallback(() => {
-    socketDispatch({
-      type: "send",
-      payload: {
-        message: { method: Method.AUTH, address: "/code", prop: "show" },
-      },
-    });
+    send({ method: Method.AUTH, address: "/code", prop: "show" });
   }, []);
 
   const checkCode = useCallback((input: number) => {
-    socketDispatch({
-      type: "checkCode",
-      payload: input,
-    });
+    host?.socket.send(
+      JSON.stringify({
+        method: Method.AUTH,
+        address: "/code",
+        prop: "check",
+        code: input,
+      })
+    );
   }, []);
 
   return {
     candidates,
+    host,
     loading,
     reload,
+    find,
+    send,
     connected,
     connect,
     error,

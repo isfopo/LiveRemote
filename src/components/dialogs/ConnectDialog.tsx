@@ -1,30 +1,20 @@
-import { useEffect } from "react";
+import * as Ariakit from "@ariakit/react";
 import { CandidateStack } from "../../components/stacks/CandidateStack";
-import { Candidate } from "../../context/socket/types";
-import { useSocketContext } from "../../context/socket/useSocketContext";
+import { Candidate, SocketHost } from "../../context/socket/types";
 
 export interface ConnectDialogProps {
+  candidates: Candidate[];
+  host: SocketHost | null;
+  showCode: () => void;
   connect: (host: Candidate) => void;
 }
-export const ConnectDialog = ({ connect }: ConnectDialogProps) => {
-  const {
-    state: { candidates, host },
-    dispatch,
-  } = useSocketContext();
-
-  useEffect(() => {
-    if (host) {
-      console.log(host.socket.readyState);
-      // host.socket.send(
-      //   JSON.stringify({
-      //     method: Method.AUTH,
-      //     address: "/code",
-      //     prop: "show",
-      //   })
-      // );
-    }
-  }, [host?.socket.readyState]);
-
+export const ConnectDialog = ({
+  connect,
+  candidates,
+  showCode,
+  host,
+}: ConnectDialogProps) => {
+  console.log(host);
   return (
     <>
       <p>Connect to your set</p>
@@ -32,7 +22,12 @@ export const ConnectDialog = ({ connect }: ConnectDialogProps) => {
         candidates={candidates}
         connect={(host) => connect(host)}
       />
-      {host ? <p>Connected to {host.name}</p> : null}
+      {host ? (
+        <>
+          <p>Connected to {host.name}</p>
+          <Ariakit.Button onClick={showCode}>Show Code</Ariakit.Button>
+        </>
+      ) : null}
     </>
   );
 };

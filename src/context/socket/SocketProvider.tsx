@@ -65,18 +65,17 @@ const socketReducer: Reducer<SocketState, IActions<SocketActions>> = (
         code: payload,
       };
     case "send": {
-      const { message } = payload;
       const getType = () => {
-        if (!message.value) return null;
-        return message.type ?? typeof message.value === "number"
+        if (!payload.value) return null;
+        return payload.type ?? typeof payload.value === "number"
           ? "int"
-          : typeof message.value;
+          : typeof payload.value;
       };
 
       if (state.host?.socket) {
         state.host.socket.send(
           JSON.stringify({
-            ...message,
+            ...payload,
             code: state.code,
             type: getType(),
           })
