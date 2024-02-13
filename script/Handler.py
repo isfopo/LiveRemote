@@ -71,6 +71,10 @@ class Handler:
     def on_message(self, client_id: int, payload: str):
         message = IncomingMessage(client_id, payload)
 
+        self.control_surface.log_message(
+            "Client({client}) sent: {message}".format(client=client_id, message=message)
+        )
+
         if message.method == Method.AUTH:
             if message.address == "/code" and message.prop == "show":
                 self.control_surface.show_message(

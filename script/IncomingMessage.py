@@ -37,7 +37,10 @@ class IncomingMessage:
             self.method = Method(self.payload["method"])
             self.address = self.payload["address"]
             self.prop = self.payload["prop"]
-            self.type = self.payload["type"]
+            try:
+                self.type = self.payload["type"]
+            except KeyError:
+                self.type = "null"
             try:
                 if self.payload["code"] is not None:
                     self.code = int(self.payload["code"])

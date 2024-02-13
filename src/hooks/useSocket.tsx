@@ -136,16 +136,19 @@ export const useSocket = ({
     send({ method: Method.AUTH, address: "/code", prop: "show" });
   }, [send]);
 
-  const checkCode = useCallback((input: number) => {
-    host?.socket.send(
-      JSON.stringify({
-        method: Method.AUTH,
-        address: "/code",
-        prop: "check",
-        code: input,
-      })
-    );
-  }, []);
+  const checkCode = useCallback(
+    (input: number) => {
+      host?.socket.send(
+        JSON.stringify({
+          method: Method.AUTH,
+          address: "/code",
+          prop: "check",
+          code: input,
+        })
+      );
+    },
+    [host]
+  );
 
   const disconnect = useCallback(() => {
     host?.socket.close();

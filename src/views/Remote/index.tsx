@@ -8,9 +8,10 @@ import { useSocket } from "../../hooks/useSocket";
 export const Remote = () => {
   const { dispatch: dialogDispatch } = useDialogContext();
 
-  const { find, connect, candidates, host, showCode, disconnect } = useSocket({
-    auto: true,
-  });
+  const { find, connect, candidates, host, showCode, disconnect, checkCode } =
+    useSocket({
+      auto: true,
+    });
 
   useEffect(() => {
     if (candidates && candidates.length > 0) {
@@ -24,6 +25,7 @@ export const Remote = () => {
               candidates={candidates}
               host={host}
               showCode={showCode}
+              checkCode={checkCode}
             />
           ),
           onClose: disconnect,

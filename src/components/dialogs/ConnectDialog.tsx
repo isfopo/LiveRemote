@@ -1,33 +1,57 @@
 import * as Ariakit from "@ariakit/react";
+import { useFormStore } from "@ariakit/react";
 import { CandidateStack } from "../../components/stacks/CandidateStack";
-import { Candidate, SocketHost } from "../../context/socket/types";
+import { Candidate, SocketHost } from "../../types/socket";
+
+export interface CodeInputForm {
+  code: number | null;
+}
 
 export interface ConnectDialogProps {
   candidates: Candidate[];
   host: SocketHost | null;
   showCode: () => void;
   connect: (host: Candidate) => void;
+  checkCode: (input: number) => void;
 }
 export const ConnectDialog = ({
-  connect,
   candidates,
-  showCode,
   host,
+  connect,
+  showCode,
+  checkCode,
 }: ConnectDialogProps) => {
-  console.log(host);
+  const form = useFormStore<CodeInputForm>({
+    defaultValues: { code: null },
+  });
+
+  form.useSubmit(() => {
+    const { code } = form.getState().values;
+    console.log(code);
+    if (code) {
+      checkCode(code);
+    }
+  });
+
+  if (!host) {
+    return (
+      <>
+        <p>Connect to your set</p>
+        <CandidateStack
+          candidates={candidates}
+          connect={(host) => connect(host)}
+        />
+      </>
+    );
+  }
+
   return (
-    <>
-      <p>Connect to your set</p>
-      <CandidateStack
-        candidates={candidates}
-        connect={(host) => connect(host)}
-      />
-      {host ? (
-        <>
-          <p>Connected to {host.name}</p>
-          <Ariakit.Button onClick={showCode}>Show Code</Ariakit.Button>
-        </>
-      ) : null}
-    </>
+    <Ariakit.Form store={form}>
+      <p>Connected to {host.name}</p>
+      <Ariakit.Button onClick={showCode}>Show Code</Ariakit.Button>
+      <Ariakit.FormInput name={form.names.code} placeholder="Code" required />
+      <Ariakit.FormError name={form.names.code} />
+      <Ariakit.FormSubmit>Check</Ariakit.FormSubmit>
+    </Ariakit.Form>
   );
 };
