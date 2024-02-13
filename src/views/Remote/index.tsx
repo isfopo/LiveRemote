@@ -1,14 +1,25 @@
 import * as Ariakit from "@ariakit/react";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { ConnectDialog } from "../../components/dialogs/ConnectDialog";
 import { useDialogContext } from "../../context/dialog/useDialogContext";
 import { useLiveContext } from "../../context/live/useLiveContext";
 import { useSocket } from "../../hooks/useSocket";
+import { IncomingMessage } from "../../types/socket";
 
 export const Remote = () => {
   const { dispatch: dialogDispatch } = useDialogContext();
   const { dispatch: liveDispatch } = useLiveContext();
+
+  const handleMessage = useCallback(
+    (message: IncomingMessage) => {
+      liveDispatch({
+        type: "update",
+        payload: message,
+      });
+    },
+    [liveDispatch]
+  );
 
   const {
     candidates,
@@ -21,9 +32,7 @@ export const Remote = () => {
     checkCode,
   } = useSocket({
     auto: true,
-    onMessage: liveDispatch
-      ? (message) => liveDispatch({ type: "update", payload: message })
-      : undefined,
+    onMessage: handleMessage,
   });
 
   useEffect(() => {

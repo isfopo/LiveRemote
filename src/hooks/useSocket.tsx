@@ -78,44 +78,47 @@ export const useSocket = ({
   }, [base, port, high, low]);
 
   useEffect(() => {
-    if (auto && candidates.length === 0) {
+    if (auto && !host) {
       find();
     }
-  }, [find, auto, candidates]);
+  }, [find, auto, host]);
 
-  const connect = useCallback((candidate: Candidate) => {
-    const socket = new WebSocket(candidate.url);
+  const connect = useCallback(
+    (candidate: Candidate) => {
+      const socket = new WebSocket(candidate.url);
 
-    socket.onclose = () => {
-      onDisconnect?.();
-    };
+      socket.onclose = () => {
+        onDisconnect?.();
+      };
 
-    socket.onmessage = (e) => {
-      const message = JSON.parse(e.data) as IncomingMessage;
-      if (message.method === Method.AUTH) {
-        if (message.address === "/code" && message.prop === "check") {
-          if (message.status === Status.SUCCESS) {
-            setCode(message.result as number);
-          } else if (message.status === Status.FAILURE) {
-            setError(message.result as string);
+      socket.onmessage = (e) => {
+        const message = JSON.parse(e.data) as IncomingMessage;
+        if (message.method === Method.AUTH) {
+          if (message.address === "/code" && message.prop === "check") {
+            if (message.status === Status.SUCCESS) {
+              setCode(message.result as number);
+            } else if (message.status === Status.FAILURE) {
+              setError(message.result as string);
+            }
           }
+        } else {
+          onMessage?.(message);
         }
-      } else {
-        onMessage?.(message);
-      }
-    };
+      };
 
-    socket.onerror = (e) => {
-      onError?.(e);
-    };
+      socket.onerror = (e) => {
+        onError?.(e);
+      };
 
-    setHost({
-      ...candidate,
-      socket,
-    });
+      setHost({
+        ...candidate,
+        socket,
+      });
 
-    onConnect?.();
-  }, []);
+      onConnect?.();
+    },
+    [onConnect, onDisconnect, onMessage, onError]
+  );
 
   const send = useCallback(
     (message: OutgoingMessage) => {
