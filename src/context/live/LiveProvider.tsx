@@ -5,8 +5,8 @@ import {
   createContext,
   useReducer,
 } from "react";
-import { LiveActions, LiveState } from "./types";
 import { IActions } from "../types";
+import { LiveActions, LiveState } from "./types";
 
 export const initialState: LiveState = {
   song: {
@@ -28,9 +28,11 @@ const liveReducer: Reducer<LiveState, IActions<LiveActions>> = (
   { type, payload }
 ) => {
   switch (type) {
-    case "update":
+    case "update": {
       // parse incoming message to update the Live state
+      console.log("update", payload);
       return state;
+    }
     case "reset":
       return initialState;
     default:

@@ -27,7 +27,6 @@ export const ConnectDialog = ({
 
   form.useSubmit(() => {
     const { code } = form.getState().values;
-    console.log(code);
     if (code) {
       checkCode(code);
     }
@@ -49,7 +48,11 @@ export const ConnectDialog = ({
     <Ariakit.Form store={form}>
       <p>Connected to {host.name}</p>
       <Ariakit.Button onClick={showCode}>Show Code</Ariakit.Button>
-      <Ariakit.FormInput name={form.names.code} placeholder="Code" required />
+      <Ariakit.FormInput
+        name={form.names.code}
+        placeholder="Code"
+        required={true}
+      />
       <Ariakit.FormError name={form.names.code} />
       <Ariakit.FormSubmit>Check</Ariakit.FormSubmit>
     </Ariakit.Form>

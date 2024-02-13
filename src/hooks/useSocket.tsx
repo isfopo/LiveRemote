@@ -40,12 +40,14 @@ export const useSocket = ({
   const [error, setError] = useState<string | undefined>();
 
   const connected = useMemo<boolean>(() => {
-    if (!host || !host.socket || !code) return false;
+    if (!(host?.socket && code)) {
+      return false;
+    }
 
     return host.socket.readyState === WebSocket.OPEN;
-  }, [host]);
+  }, [host, code]);
 
-  const find = async () => {
+  const find = useCallback(async () => {
     setLoading(true);
     setCandidates([]);
 
@@ -73,55 +75,54 @@ export const useSocket = ({
         }
       };
     }
-  };
+  }, [base, port, high, low]);
 
   useEffect(() => {
-    if (auto) {
+    if (auto && candidates.length === 0) {
       find();
     }
-  }, []);
+  }, [find, auto, candidates]);
 
-  const connect = useCallback(
-    (candidate: Candidate) => {
-      const socket = new WebSocket(candidate.url);
+  const connect = useCallback((candidate: Candidate) => {
+    const socket = new WebSocket(candidate.url);
 
-      socket.onclose = () => {
-        onDisconnect?.();
-      };
+    socket.onclose = () => {
+      onDisconnect?.();
+    };
 
-      socket.onmessage = (e) => {
-        const message = JSON.parse(e.data) as IncomingMessage;
-        if (message.method === Method.AUTH) {
-          if (message.address === "/code" && message.prop === "check") {
-            if (message.status === Status.SUCCESS) {
-              setCode(message.result as number);
-            } else if (message.status === Status.FAILURE) {
-              setError(message.result as string);
-            }
+    socket.onmessage = (e) => {
+      const message = JSON.parse(e.data) as IncomingMessage;
+      if (message.method === Method.AUTH) {
+        if (message.address === "/code" && message.prop === "check") {
+          if (message.status === Status.SUCCESS) {
+            setCode(message.result as number);
+          } else if (message.status === Status.FAILURE) {
+            setError(message.result as string);
           }
-        } else {
-          onMessage?.(message);
         }
-      };
+      } else {
+        onMessage?.(message);
+      }
+    };
 
-      socket.onerror = (e) => {
-        onError?.(e);
-      };
+    socket.onerror = (e) => {
+      onError?.(e);
+    };
 
-      setHost({
-        ...candidate,
-        socket,
-      });
+    setHost({
+      ...candidate,
+      socket,
+    });
 
-      onConnect?.();
-    },
-    [onConnect, onDisconnect, onError, onMessage]
-  );
+    onConnect?.();
+  }, []);
 
   const send = useCallback(
     (message: OutgoingMessage) => {
       const getType = () => {
-        if (!message.value) return null;
+        if (!message.value) {
+          return null;
+        }
         return message.type ?? typeof message.value === "number"
           ? "int"
           : typeof message.value;
@@ -129,7 +130,7 @@ export const useSocket = ({
 
       host?.socket.send(JSON.stringify({ ...message, type: getType(), code }));
     },
-    [host]
+    [host, code]
   );
 
   const showCode = useCallback(() => {

@@ -3,10 +3,12 @@ import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { ConnectDialog } from "../../components/dialogs/ConnectDialog";
 import { useDialogContext } from "../../context/dialog/useDialogContext";
+import { useLiveContext } from "../../context/live/useLiveContext";
 import { useSocket } from "../../hooks/useSocket";
 
 export const Remote = () => {
   const { dispatch: dialogDispatch } = useDialogContext();
+  const { dispatch: liveDispatch } = useLiveContext();
 
   const {
     candidates,
@@ -19,6 +21,9 @@ export const Remote = () => {
     checkCode,
   } = useSocket({
     auto: true,
+    onMessage: liveDispatch
+      ? (message) => liveDispatch({ type: "update", payload: message })
+      : undefined,
   });
 
   useEffect(() => {
@@ -29,9 +34,9 @@ export const Remote = () => {
           id: "connect",
           component: (
             <ConnectDialog
-              connect={connect}
               candidates={candidates}
               host={host}
+              connect={connect}
               showCode={showCode}
               checkCode={checkCode}
             />
@@ -40,7 +45,15 @@ export const Remote = () => {
         },
       });
     }
-  }, [candidates, host, showCode, connect]);
+  }, [
+    candidates,
+    host,
+    showCode,
+    connect,
+    dialogDispatch,
+    disconnect,
+    checkCode,
+  ]);
 
   useEffect(() => {
     if (host && code) {
@@ -49,7 +62,7 @@ export const Remote = () => {
         payload: null,
       });
     }
-  }, [host, code]);
+  }, [host, code, dialogDispatch]);
 
   if (candidates.length === 0 && !host) {
     return (
