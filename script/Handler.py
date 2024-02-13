@@ -114,7 +114,19 @@ class Handler:
                 else:
                     value = self.control_surface.preferences.get(message.prop)
             else:
-                value = getattr(self.locate(message.address), message.prop)
+                try:
+                    value = getattr(self.locate(message.address), message.prop)
+                except AttributeError:
+                    self.server.send(
+                        client_id,
+                        OutgoingMessage(
+                            Status.FAILURE,
+                            message.method,
+                            message.address,
+                            message.prop,
+                            "Property not found",
+                        ).to_dict(),
+                    )
 
             if value is not None:
                 self.server.send(
