@@ -2,6 +2,7 @@ import GridLayout from "react-grid-layout";
 
 import { useState } from "react";
 import { OutgoingMessage } from "../../../types/socket";
+import { TransportWidget } from "../../widgets/TransportWidget";
 import { Widget } from "../../widgets/Widget";
 import styles from "./index.module.scss";
 
@@ -18,16 +19,16 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
   const [widgets, setWidgets] = useState([
     {
       id: "a",
-      component: <Widget i="a" send={send} />,
+      component: <TransportWidget send={send} />,
     },
     {
       id: "b",
-      component: <Widget i="a" send={send} />,
+      component: <Widget>hi</Widget>,
     },
   ]);
 
   const layout: GridLayout.Layout[] = [
-    { i: "a", x: 0, y: 0, w: 1, h: 2 },
+    { i: "a", x: 0, y: 0, w: 3, h: 2 },
     { i: "b", x: 1, y: 0, w: 1, h: 2 },
     { i: "c", x: 3, y: 0, w: 1, h: 2 },
   ];

@@ -1,10 +1,5 @@
-import { OutgoingMessage } from "../../../types/socket";
+import { PropsWithChildren } from "react";
 
-export interface WidgetProps {
-  i: string;
-  send: (message: OutgoingMessage) => void;
-}
-
-export const Widget = ({ i, send }: WidgetProps) => {
-  return <div key={i}>widget</div>;
+export const Widget = ({ children }: PropsWithChildren) => {
+  return <div>{children}</div>;
 };
