@@ -1,10 +1,11 @@
 import * as Ariakit from "@ariakit/react";
 import { useCallback, useEffect } from "react";
 import { ConnectDialog } from "../../components/dialogs/ConnectDialog";
+import { WidgetGrid } from "../../components/grids/WidgetGrid";
 import { useDialogContext } from "../../context/dialog/useDialogContext";
 import { useLiveContext } from "../../context/live/useLiveContext";
 import { useSocket } from "../../hooks/useSocket";
-import { IncomingMessage, Method } from "../../types/socket";
+import { IncomingMessage } from "../../types/socket";
 
 export const Remote = () => {
   const { dispatch: dialogDispatch } = useDialogContext();
@@ -79,15 +80,5 @@ export const Remote = () => {
     );
   }
 
-  return (
-    <>
-      <Ariakit.Button
-        onClick={() =>
-          send({ method: Method.GET, address: "/song", prop: "record_mode" })
-        }
-      >
-        Send
-      </Ariakit.Button>
-    </>
-  );
+  return <WidgetGrid send={send} />;
 };
