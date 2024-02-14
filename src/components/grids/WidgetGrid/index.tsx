@@ -1,6 +1,7 @@
 import GridLayout from "react-grid-layout";
 
 import { useState } from "react";
+import { FaEdit as Edit } from "react-icons/fa";
 import { OutgoingMessage } from "../../../types/socket";
 import { TransportWidget } from "../../widgets/TransportWidget";
 import { Widget } from "../../widgets/Widget";
@@ -16,6 +17,7 @@ export interface WidgetGridProps {
 }
 
 export const WidgetGrid = ({ send }: WidgetGridProps) => {
+  const [edit, setEdit] = useState<boolean>(false);
   const [widgets, setWidgets] = useState([
     {
       id: "a",
@@ -34,17 +36,20 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
   ];
 
   return (
-    <GridLayout
-      className={styles.grid}
-      layout={layout}
-      isDraggable={true}
-      cols={12}
-      rowHeight={20}
-      width={1200}
-    >
-      {widgets.map(({ id, component }) => (
-        <div key={id}>{component}</div>
-      ))}
-    </GridLayout>
+    <>
+      <Edit onClick={() => setEdit(!edit)} />
+      <GridLayout
+        className={styles.grid}
+        layout={layout}
+        isDraggable={edit}
+        cols={12}
+        rowHeight={20}
+        width={1200}
+      >
+        {widgets.map(({ id, component }) => (
+          <div key={id}>{component}</div>
+        ))}
+      </GridLayout>
+    </>
   );
 };
