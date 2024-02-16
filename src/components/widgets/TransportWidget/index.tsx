@@ -1,7 +1,6 @@
-import { FaCircle as Record } from "react-icons/fa";
 import { OutgoingMessage } from "../../../types/socket";
-import { IconButton } from "../../buttons/IconButton";
 import { PlayButton } from "../../buttons/PlayButton";
+import { RecordButton } from "../../buttons/RecordButton";
 import { StopButton } from "../../buttons/StopButton";
 
 export interface TransportWidgetProps {
@@ -13,9 +12,7 @@ export const TransportWidget = ({ send }: TransportWidgetProps) => {
     <>
       <PlayButton send={send} />
       <StopButton send={send} />
-      <IconButton>
-        <Record />
-      </IconButton>
+      <RecordButton send={send} />
     </>
   );
 };
