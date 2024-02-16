@@ -1,6 +1,6 @@
 import GridLayout from "react-grid-layout";
 
-import { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { FaEdit as Edit } from "react-icons/fa";
 import { OutgoingMessage } from "../../../types/socket";
 import { TransportWidget } from "../../widgets/TransportWidget";
@@ -9,7 +9,7 @@ import styles from "./index.module.scss";
 
 export interface WidgetMap {
   id: string;
-  component: Element;
+  component: React.ReactNode;
 }
 
 export interface WidgetGridProps {
@@ -18,16 +18,19 @@ export interface WidgetGridProps {
 
 export const WidgetGrid = ({ send }: WidgetGridProps) => {
   const [edit, setEdit] = useState<boolean>(false);
-  const [widgets, setWidgets] = useState([
-    {
-      id: "a",
-      component: <TransportWidget send={send} />,
-    },
-    {
-      id: "b",
-      component: <Widget>hi</Widget>,
-    },
-  ]);
+  const widgets = useMemo<WidgetMap[]>(
+    () => [
+      {
+        id: "a",
+        component: <TransportWidget send={send} />,
+      },
+      {
+        id: "b",
+        component: <Widget>hi</Widget>,
+      },
+    ],
+    [send]
+  );
 
   const layout: GridLayout.Layout[] = [
     { i: "a", x: 0, y: 0, w: 3, h: 2 },
