@@ -7,9 +7,18 @@ export interface IconButtonProps extends Ariakit.ButtonProps {
   size?: "small" | "medium" | "large";
 }
 
-export const IconButton = ({ children, size = "medium" }: IconButtonProps) => {
+export const IconButton = ({
+  children,
+  size = "medium",
+  className,
+  ...props
+}: IconButtonProps) => {
+  console.log(props);
   return (
-    <Ariakit.Button className={`${styles.button} ${styles[size]}`}>
+    <Ariakit.Button
+      {...props}
+      className={`${className} ${styles.button} ${styles[size]}`}
+    >
       {children}
     </Ariakit.Button>
   );

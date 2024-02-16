@@ -1,9 +1,7 @@
-import {
-  FaPause as Pause,
-  FaPlay as Play,
-  FaCircle as Record,
-} from "react-icons/fa";
+import { FaPause as Pause, FaCircle as Record } from "react-icons/fa";
 import { OutgoingMessage } from "../../../types/socket";
+import { IconButton } from "../../buttons/IconButton";
+import { PlayButton } from "../../buttons/PlayButton";
 
 export interface TransportWidgetProps {
   send: (message: OutgoingMessage) => void;
@@ -12,9 +10,13 @@ export interface TransportWidgetProps {
 export const TransportWidget = ({ send }: TransportWidgetProps) => {
   return (
     <>
-      <Play />
-      <Pause />
-      <Record />
+      <PlayButton send={send} />
+      <IconButton>
+        <Pause />
+      </IconButton>
+      <IconButton>
+        <Record />
+      </IconButton>
     </>
   );
 };
