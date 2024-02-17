@@ -5,7 +5,6 @@ import { FaEdit as Edit } from "react-icons/fa";
 import { OutgoingMessage } from "../../../types/socket";
 import { IconButton } from "../../buttons/IconButton";
 import { TransportWidget } from "../../widgets/TransportWidget";
-import { Widget } from "../../widgets/Widget";
 import styles from "./index.module.scss";
 
 export interface WidgetMap {
@@ -22,21 +21,15 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
   const widgets = useMemo<WidgetMap[]>(
     () => [
       {
-        id: "a",
+        id: "transport",
         component: <TransportWidget send={send} />,
-      },
-      {
-        id: "b",
-        component: <Widget>hi</Widget>,
       },
     ],
     [send]
   );
 
   const layout: GridLayout.Layout[] = [
-    { i: "a", x: 0, y: 0, w: 3, h: 2 },
-    { i: "b", x: 1, y: 0, w: 1, h: 2 },
-    { i: "c", x: 3, y: 0, w: 1, h: 2 },
+    { i: "transport", x: 0, y: 0, w: 3, h: 2 },
   ];
 
   return (
