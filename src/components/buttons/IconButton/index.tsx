@@ -12,14 +12,11 @@ export const IconButton = ({
   size = "medium",
   className,
   ...props
-}: IconButtonProps) => {
-  console.log(props);
-  return (
-    <Ariakit.Button
-      {...props}
-      className={`${className} ${styles.button} ${styles[size]}`}
-    >
-      {children}
-    </Ariakit.Button>
-  );
-};
+}: IconButtonProps) => (
+  <Ariakit.Button
+    {...props}
+    className={`${className} ${styles.button} ${styles[size]}`}
+  >
+    {children}
+  </Ariakit.Button>
+);
