@@ -254,10 +254,7 @@ class Handler:
             )
             return
 
-        if (
-            self.control_surface.preferences.get("requireCode") is True
-            and self.client_codes.validate(client_id, message.code) is False
-        ):
+        if self.client_codes.validate(client_id, message.code) is False:
             self.server.send(
                 client_id,
                 OutgoingMessage(
