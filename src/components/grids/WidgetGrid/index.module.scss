@@ -12,3 +12,11 @@
     padding: 0.5rem;
   }
 }
+
+.actions {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}

@@ -3,6 +3,7 @@ import GridLayout from "react-grid-layout";
 import React, { useMemo, useState } from "react";
 import { FaEdit as Edit } from "react-icons/fa";
 import { OutgoingMessage } from "../../../types/socket";
+import { IconButton } from "../../buttons/IconButton";
 import { TransportWidget } from "../../widgets/TransportWidget";
 import { Widget } from "../../widgets/Widget";
 import styles from "./index.module.scss";
@@ -40,7 +41,6 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
 
   return (
     <>
-      <Edit onClick={() => setEdit(!edit)} />
       <GridLayout
         className={styles.grid}
         layout={layout}
@@ -53,6 +53,11 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
           <div key={id}>{component}</div>
         ))}
       </GridLayout>
+      <div className={styles.actions}>
+        <IconButton size="small" onClick={() => setEdit(!edit)}>
+          <Edit />
+        </IconButton>
+      </div>
     </>
   );
 };
