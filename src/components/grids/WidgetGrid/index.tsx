@@ -42,9 +42,11 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
         rowHeight={20}
         width={1200}
       >
-        {widgets.map(({ id, component }) => (
-          <div key={id}>{component}</div>
-        ))}
+        {widgets
+          .filter(({ id }) => layout.some(({ i }) => i === id))
+          .map(({ id, component }) => (
+            <div key={id}>{component}</div>
+          ))}
       </GridLayout>
       <div className={styles.actions}>
         <IconButton size="small" onClick={() => setEdit(!edit)}>
