@@ -32,6 +32,12 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
     [send, layout]
   );
 
+  /**
+   * A callback that handles the layout change.
+   *
+   * @param {GridLayout.Layout[]} newLayout - the new layout to be set
+   * @return {void}
+   */
   const onLayoutChange = (newLayout: GridLayout.Layout[]) => {
     setLayout(newLayout);
     setInLocalStorage<GridLayout.Layout[]>("layout", newLayout);
