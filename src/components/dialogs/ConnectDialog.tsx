@@ -14,6 +14,7 @@ export interface ConnectDialogProps {
   connect: (host: Candidate) => void;
   checkCode: (input: number) => void;
 }
+
 export const ConnectDialog = ({
   candidates,
   host,
