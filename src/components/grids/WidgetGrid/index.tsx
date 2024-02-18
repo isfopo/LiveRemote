@@ -23,7 +23,7 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
         onLayoutChange={onLayoutChange}
         isDraggable={edit}
         cols={12}
-        rowHeight={20}
+        rowHeight={40}
         margin={[4, 4]}
         width={1200}
       >
