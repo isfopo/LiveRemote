@@ -24,10 +24,16 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
         isDraggable={edit}
         cols={12}
         rowHeight={20}
+        margin={[4, 4]}
         width={1200}
       >
         {widgets.map(({ id, component }) => (
-          <div key={id}>{component}</div>
+          <div
+            className={`${styles.widget} ${edit ? styles.edit : ""}`}
+            key={id}
+          >
+            {component}
+          </div>
         ))}
       </GridLayout>
       <div className={styles.actions}>
