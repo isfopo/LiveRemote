@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import GridLayout from "react-grid-layout";
 import { TransportWidget } from "../components/widgets/TransportWidget";
+import { getFromLocalStorage, setInLocalStorage } from "../helpers/storage";
 import { OutgoingMessage } from "../types/socket";
 
 export interface WidgetMap {
@@ -12,10 +13,13 @@ export interface UseWidgetLayoutOptions {
   send: (message: OutgoingMessage) => void;
 }
 
+const defaultLayout = getFromLocalStorage<GridLayout.Layout[]>("layout") || [
+  { i: "transport", x: 0, y: 0, w: 3, h: 2 },
+];
+
 export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
-  const layout: GridLayout.Layout[] = [
-    { i: "transport", x: 0, y: 0, w: 3, h: 2 },
-  ];
+  const [layout, setLayout] =
+    React.useState<GridLayout.Layout[]>(defaultLayout);
 
   const widgets = useMemo<WidgetMap[]>(
     () =>
@@ -27,6 +31,11 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
       ].filter(({ id }) => layout.some(({ i }) => i === id)),
     [send, layout]
   );
+
+  const onLayoutChange = (newLayout: GridLayout.Layout[]) => {
+    setLayout(newLayout);
+    setInLocalStorage<GridLayout.Layout[]>("layout", newLayout);
+  };
 
   /**
    * Adds a widget to the layout.
@@ -51,5 +60,5 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
     );
   };
 
-  return { widgets, layout, addWidget, removeWidget };
+  return { widgets, layout, onLayoutChange, addWidget, removeWidget };
 };

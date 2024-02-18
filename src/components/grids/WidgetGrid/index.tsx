@@ -13,13 +13,14 @@ export interface WidgetGridProps {
 
 export const WidgetGrid = ({ send }: WidgetGridProps) => {
   const [edit, setEdit] = useState<boolean>(false);
-  const { widgets, layout } = useWidgetLayout({ send });
+  const { widgets, layout, onLayoutChange } = useWidgetLayout({ send });
 
   return (
     <>
       <GridLayout
         className={styles.grid}
         layout={layout}
+        onLayoutChange={onLayoutChange}
         isDraggable={edit}
         cols={12}
         rowHeight={20}
