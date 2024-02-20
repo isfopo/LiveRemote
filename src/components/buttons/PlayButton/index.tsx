@@ -28,7 +28,7 @@ export const PlayButton = ({ send }: PlayButtonProps) => {
           type: "int",
         })
       }
-      className={is_playing === 1 ? styles["is-playing"] : ""}
+      className={is_playing ? styles["is-playing"] : ""}
     >
       <Play />
     </IconButton>
