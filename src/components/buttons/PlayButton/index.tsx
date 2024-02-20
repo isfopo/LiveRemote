@@ -15,8 +15,6 @@ export const PlayButton = ({ send }: PlayButtonProps) => {
     },
   } = useLiveContext();
 
-  console.log(is_playing);
-
   return (
     <IconButton
       onClick={() =>
