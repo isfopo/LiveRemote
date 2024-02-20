@@ -7,6 +7,12 @@
 		"enabled": true,
 		"rules": {
 			"all": true,
+			"style": {
+				"useNamingConvention": "off"
+			},
+			"suspicious": {
+				"noExplicitAny": "warn"
+			},
 			"nursery": {
 				"useImportRestrictions": "off"
 			},
