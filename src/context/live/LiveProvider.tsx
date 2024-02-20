@@ -30,13 +30,15 @@ const liveReducer: Reducer<LiveState, IActions<LiveActions>> = (
 ) => {
   switch (type) {
     case "update": {
+      const updated: LiveState = { ...state };
+
       set(
-        state,
+        updated,
         [payload.address.split("/"), payload.prop].join("."),
         payload.result
       );
 
-      return state;
+      return updated;
     }
     case "reset":
       return initialState;
