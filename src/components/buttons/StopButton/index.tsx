@@ -15,7 +15,7 @@ export const StopButton = ({ send }: StopButtonProps) => {
           address: "song",
           prop: "is_playing",
           value: 0,
-          type: "boolean",
+          type: "int",
         })
       }
     >

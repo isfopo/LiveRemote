@@ -25,10 +25,10 @@ export const PlayButton = ({ send }: PlayButtonProps) => {
           address: "song",
           prop: "is_playing",
           value: 1,
-          type: "boolean",
+          type: "int",
         })
       }
-      className={is_playing ? styles["is-playing"] : ""}
+      className={is_playing === 1 ? styles["is-playing"] : ""}
     >
       <Play />
     </IconButton>

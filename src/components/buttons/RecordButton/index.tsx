@@ -27,7 +27,7 @@ export const RecordButton = ({ send }: RecordButtonProps) => {
           type: "int",
         })
       }
-      className={record_mode ? styles["is-playing"] : ""}
+      className={record_mode ? styles["is-recording"] : ""}
     >
       <Record />
     </IconButton>
