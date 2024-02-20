@@ -76,13 +76,13 @@ class Handler:
         )
 
         if message.method == Method.AUTH:
-            if message.address == "/code" and message.prop == "show":
+            if message.address == "code" and message.prop == "show":
                 self.control_surface.show_message(
                     f"Client secret is {self.client_codes.get(client_id)}"
                 )
                 return
 
-            if message.address == "/code" and message.prop == "check":
+            if message.address == "code" and message.prop == "check":
                 if self.client_codes.validate(client_id, message.code):
                     self.server.send(
                         client_id,
@@ -302,7 +302,7 @@ class Handler:
         elif message.method == Method.SET:
             if message.value is not None:
                 try:
-                    if message.address == "/pref":
+                    if message.address == "pref":
                         self.control_surface.preferences.set(
                             message.prop, message.value
                         )
@@ -353,7 +353,7 @@ class Handler:
 
     def locate(self, address: str):
         location = self
-        split = address.split("/")[1:]
+        split = address.split("/")
 
         for attr in split:
             try:
