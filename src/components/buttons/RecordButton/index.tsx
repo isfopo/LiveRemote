@@ -12,7 +12,7 @@ export interface RecordButtonProps {
 export const RecordButton = ({ send }: RecordButtonProps) => {
   const {
     state: {
-      song: { recordMode },
+      song: { record_mode },
     },
   } = useLiveContext();
 
@@ -21,13 +21,13 @@ export const RecordButton = ({ send }: RecordButtonProps) => {
       onClick={() =>
         send({
           method: Method.SET,
-          address: "/song",
+          address: "song",
           prop: "is_playing",
-          value: !recordMode,
+          value: !record_mode,
           type: "boolean",
         })
       }
-      className={recordMode ? styles["is-playing"] : ""}
+      className={record_mode ? styles["is-playing"] : ""}
     >
       <Record />
     </IconButton>

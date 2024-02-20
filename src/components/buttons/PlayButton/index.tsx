@@ -11,22 +11,24 @@ export interface PlayButtonProps {
 export const PlayButton = ({ send }: PlayButtonProps) => {
   const {
     state: {
-      song: { isPlaying },
+      song: { is_playing },
     },
   } = useLiveContext();
+
+  console.log(is_playing);
 
   return (
     <IconButton
       onClick={() =>
         send({
           method: Method.SET,
-          address: "/song",
+          address: "song",
           prop: "is_playing",
-          value: !isPlaying,
+          value: 1,
           type: "boolean",
         })
       }
-      className={isPlaying ? styles["is-playing"] : ""}
+      className={is_playing ? styles["is-playing"] : ""}
     >
       <Play />
     </IconButton>
