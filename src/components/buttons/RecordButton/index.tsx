@@ -22,9 +22,9 @@ export const RecordButton = ({ send }: RecordButtonProps) => {
         send({
           method: Method.SET,
           address: "song",
-          prop: "is_playing",
-          value: !record_mode,
-          type: "boolean",
+          prop: "record_mode",
+          value: 1,
+          type: "int",
         })
       }
       className={record_mode ? styles["is-playing"] : ""}
