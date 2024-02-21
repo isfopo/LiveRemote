@@ -1,8 +1,8 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import GridLayout from "react-grid-layout";
 import { TransportWidget } from "../components/widgets/TransportWidget";
 import { getFromLocalStorage, setInLocalStorage } from "../helpers/storage";
-import { OutgoingMessage } from "../types/socket";
+import { Method, OutgoingMessage } from "../types/socket";
 
 export interface Listener {
   address: string;
@@ -47,6 +47,33 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
       ].filter(({ id }) => layout.some(({ i }) => i === id)),
     [send, layout]
   );
+
+  useEffect(() => {
+    console.log(send);
+    if (!send) return;
+
+    for (const widget of widgets) {
+      for (const { address, prop } of widget.listeners) {
+        send({
+          method: Method.LISTEN,
+          address,
+          prop,
+        });
+      }
+    }
+
+    return () => {
+      for (const widget of widgets) {
+        for (const { address, prop } of widget.listeners) {
+          send({
+            method: Method.UNLISTEN,
+            address,
+            prop,
+          });
+        }
+      }
+    };
+  }, [send, widgets]);
 
   /**
    * A callback that handles the layout change.
