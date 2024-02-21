@@ -12,10 +12,10 @@ export const StopButton = ({ send }: StopButtonProps) => {
       onClick={() =>
         send({
           method: Method.SET,
-          address: "/song",
+          address: "song",
           prop: "is_playing",
-          value: false,
-          type: "boolean",
+          value: 0,
+          type: "int",
         })
       }
     >

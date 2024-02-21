@@ -1,3 +1,4 @@
+import set from "lodash.set";
 import {
   Dispatch,
   PropsWithChildren,
@@ -10,8 +11,8 @@ import { LiveActions, LiveState } from "./types";
 
 export const initialState: LiveState = {
   song: {
-    isPlaying: false,
-    recordMode: false,
+    is_playing: 0,
+    record_mode: 0,
   },
 };
 
@@ -29,9 +30,15 @@ const liveReducer: Reducer<LiveState, IActions<LiveActions>> = (
 ) => {
   switch (type) {
     case "update": {
-      // parse incoming message to update the Live state
-      console.log("update", payload);
-      return state;
+      const updated: LiveState = { ...state };
+
+      set(
+        updated,
+        [payload.address.split("/"), payload.prop].join("."),
+        payload.result
+      );
+
+      return updated;
     }
     case "reset":
       return initialState;

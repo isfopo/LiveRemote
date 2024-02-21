@@ -24,5 +24,5 @@ export const DialogManager = () => {
         {state.activeDialog?.component}
       </Ariakit.Dialog>
     );
-  }, [state]);
+  }, [state, handleClose]);
 };

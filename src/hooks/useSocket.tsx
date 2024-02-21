@@ -94,7 +94,7 @@ export const useSocket = ({
       socket.onmessage = (e) => {
         const message = JSON.parse(e.data) as IncomingMessage;
         if (message.method === Method.AUTH) {
-          if (message.address === "/code" && message.prop === "check") {
+          if (message.address === "code" && message.prop === "check") {
             if (message.status === Status.SUCCESS) {
               setCode(message.result as number);
             } else if (message.status === Status.FAILURE) {
@@ -122,22 +122,13 @@ export const useSocket = ({
 
   const send = useCallback(
     (message: OutgoingMessage) => {
-      const getType = () => {
-        if (!message.value) {
-          return null;
-        }
-        return message.type ?? typeof message.value === "number"
-          ? "int"
-          : typeof message.value;
-      };
-
-      host?.socket.send(JSON.stringify({ ...message, type: getType(), code }));
+      host?.socket.send(JSON.stringify({ ...message, code }));
     },
     [host, code]
   );
 
   const showCode = useCallback(() => {
-    send({ method: Method.AUTH, address: "/code", prop: "show" });
+    send({ method: Method.AUTH, address: "code", prop: "show" });
   }, [send]);
 
   const checkCode = useCallback(
@@ -145,7 +136,7 @@ export const useSocket = ({
       host?.socket.send(
         JSON.stringify({
           method: Method.AUTH,
-          address: "/code",
+          address: "code",
           prop: "check",
           code: input,
         })
