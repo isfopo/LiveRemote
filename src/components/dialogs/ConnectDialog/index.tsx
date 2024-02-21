@@ -61,8 +61,8 @@ export const ConnectDialog = ({
           placeholder="Code"
           required
         />
-        <Ariakit.FormError name={form.names.code} />
       </span>
+      {/* <Ariakit.FormError name={form.names.code} /> */}
       <Ariakit.FormSubmit>Check</Ariakit.FormSubmit>
     </Ariakit.Form>
   );

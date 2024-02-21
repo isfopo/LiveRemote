@@ -1,8 +1,9 @@
 .form {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: grid;
+  grid-template: 8rem auto;
+  justify-content: stretch;
+  place-items: stretch;
   gap: 1rem;
 
   p {
@@ -11,13 +12,14 @@
   }
 
   span {
+    display: block;
+    text-align: center;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    gap: 1rem;
   }
 
   button {
     min-width: 8rem;
-    margin-right: 1rem;
   }
 }
