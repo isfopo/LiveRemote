@@ -4,9 +4,15 @@ import { TransportWidget } from "../components/widgets/TransportWidget";
 import { getFromLocalStorage, setInLocalStorage } from "../helpers/storage";
 import { OutgoingMessage } from "../types/socket";
 
+export interface Listener {
+  address: string;
+  prop: string;
+}
+
 export interface WidgetMap {
   id: string;
   component: React.ReactNode;
+  listeners: Listener[];
 }
 
 export interface UseWidgetLayoutOptions {
@@ -27,6 +33,16 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
         {
           id: "transport",
           component: <TransportWidget send={send} />,
+          listeners: [
+            {
+              address: "song",
+              prop: "is_playing",
+            },
+            {
+              address: "song",
+              prop: "record_mode",
+            },
+          ],
         },
       ].filter(({ id }) => layout.some(({ i }) => i === id)),
     [send, layout]
