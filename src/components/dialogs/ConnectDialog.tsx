@@ -53,6 +53,10 @@ export const ConnectDialog = ({
         name={form.names.code}
         placeholder="Code"
         required={true}
+        className="input"
+        type="number"
+        min={0}
+        max={9999}
       />
       <Ariakit.FormError name={form.names.code} />
       <Ariakit.FormSubmit>Check</Ariakit.FormSubmit>
