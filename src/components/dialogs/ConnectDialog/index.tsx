@@ -1,7 +1,8 @@
 import * as Ariakit from "@ariakit/react";
 import { useFormStore } from "@ariakit/react";
-import { CandidateStack } from "../../components/stacks/CandidateStack";
-import { Candidate, SocketHost } from "../../types/socket";
+import { Candidate, SocketHost } from "../../../types/socket";
+import { CandidateStack } from "../../stacks/CandidateStack";
+import styles from "./index.module.scss";
 
 export interface CodeInputForm {
   code: number | null;
@@ -46,19 +47,22 @@ export const ConnectDialog = ({
   }
 
   return (
-    <Ariakit.Form store={form}>
-      <p>Connected to {host.name}</p>
-      <Ariakit.Button onClick={showCode}>Show Code</Ariakit.Button>
-      <Ariakit.FormInput
-        name={form.names.code}
-        placeholder="Code"
-        required={true}
-        className="input"
-        type="number"
-        min={0}
-        max={9999}
-      />
-      <Ariakit.FormError name={form.names.code} />
+    <Ariakit.Form store={form} className={styles.form}>
+      <p>
+        Connected to <strong>{host.name}</strong>
+      </p>
+      <span>
+        <Ariakit.Button className="button" onClick={showCode}>
+          Show Code
+        </Ariakit.Button>
+        <Ariakit.FormInput
+          className="input"
+          name={form.names.code}
+          placeholder="Code"
+          required
+        />
+        <Ariakit.FormError name={form.names.code} />
+      </span>
       <Ariakit.FormSubmit>Check</Ariakit.FormSubmit>
     </Ariakit.Form>
   );
