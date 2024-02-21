@@ -49,9 +49,6 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
   );
 
   useEffect(() => {
-    console.log(send);
-    if (!send) return;
-
     for (const widget of widgets) {
       for (const { address, prop } of widget.listeners) {
         send({
