@@ -122,7 +122,9 @@ export const useSocket = ({
 
   const send = useCallback(
     (message: OutgoingMessage) => {
-      host?.socket.send(JSON.stringify({ ...message, code }));
+      if (host?.socket.readyState === WebSocket.OPEN) {
+        host?.socket.send(JSON.stringify({ ...message, code }));
+      }
     },
     [host, code]
   );
