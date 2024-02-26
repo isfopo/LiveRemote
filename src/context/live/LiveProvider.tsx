@@ -32,6 +32,10 @@ const liveReducer: Reducer<LiveState, IActions<LiveActions>> = (
     case "update": {
       const updated: LiveState = { ...state };
 
+      if (payload.result === null) {
+        return state;
+      }
+
       set(
         updated,
         [payload.address.split("/"), payload.prop].join("."),

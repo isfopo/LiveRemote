@@ -78,59 +78,41 @@ class Handler:
         )
 
         if getattr(message, "method", None) == Method.AUTH:
-            if message.address == "code" and message.prop == "show":
-                self.control_surface.show_message(
-                    f"Client secret is {self.client_codes.get(client_id)}"
-                )
-                return
+            self.handleAuth(message, client_id)
 
-            if message.address == "code" and message.prop == "check":
-                if self.client_codes.validate(client_id, message.code):
-                    self.server.send(
-                        client_id,
-                        OutgoingMessage(
-                            Status.SUCCESS,
-                            message.method,
-                            message.address,
-                            message.prop,
-                            message.code,
-                        ).to_dict(),
-                    )
-                else:
-                    self.server.send(
-                        client_id,
-                        OutgoingMessage(
-                            Status.FAILURE,
-                            message.method,
-                            message.address,
-                            message.prop,
-                            "Incorrect code",
-                        ).to_dict(),
-                    )
-                return
+        elif self.client_codes.validate(client_id, message.code) is False:
+            self.server.send(
+                client_id,
+                OutgoingMessage(
+                    Status.FAILURE,
+                    message.method,
+                    message.address,
+                    message.prop,
+                ).to_dict(),
+            )
 
         elif getattr(message, "method", None) == Method.GET:
-            if message.address == "/pref":
-                if message.prop == "all":
-                    value = json.dumps(self.control_surface.preferences.getAll())
-                else:
-                    value = self.control_surface.preferences.get(message.prop)
-            else:
-                try:
-                    value = getattr(self.locate(message.address), message.prop)
-                except AttributeError:
-                    self.server.send(
-                        client_id,
-                        OutgoingMessage(
-                            Status.FAILURE,
-                            message.method,
-                            message.address,
-                            message.prop,
-                            "Property not found",
-                        ).to_dict(),
-                    )
+            self.handleGet(message, client_id)
 
-            if value is not None:
+        elif getattr(message, "method", None) == Method.LISTEN:
+            self.handleListen(message, client_id)
+
+        elif getattr(message, "method", None) == Method.UNLISTEN:
+            self.handleUnlisten(message, client_id)
+
+        elif getattr(message, "method", None) == Method.CALL:
+            self.handleCall(message, client_id)
+
+        elif getattr(message, "method", None) == Method.SET:
+            self.handleSet(message, client_id)
+
+    def handleAuth(self, message: IncomingMessage, client_id: int):
+        if message.address == "code" and message.prop == "show":
+            self.control_surface.show_message(
+                f"Client secret is {self.client_codes.get(client_id)}"
+            )
+        elif message.address == "code" and message.prop == "check":
+            if self.client_codes.validate(client_id, message.code):
                 self.server.send(
                     client_id,
                     OutgoingMessage(
@@ -138,82 +120,110 @@ class Handler:
                         message.method,
                         message.address,
                         message.prop,
-                        value,
+                        message.code,
                     ).to_dict(),
                 )
-                return
-
-        elif getattr(message, "method", None) == Method.LISTEN:
-            if (
-                len(
-                    [
-                        listener
-                        for listener in self.listeners
-                        if listener.client == client_id
-                        and listener.prop == message.prop
-                    ]
-                )
-                == 0
-            ):
-
-                def callback():
-                    result = getattr(self.locate(message.address), message.prop)
-
-                    if result is not None:
-                        try:
-                            self.server.send(
-                                client_id,
-                                (
-                                    OutgoingMessage(
-                                        Status.SUCCESS,
-                                        message.method,
-                                        message.address,
-                                        message.prop,
-                                        result,
-                                    )
-                                ).to_dict(),
-                            )
-                        except BrokenPipeError:
-                            self.server.send(
-                                client_id,
-                                (
-                                    OutgoingMessage(
-                                        Status.SUCCESS,
-                                        message.method,
-                                        message.address,
-                                        message.prop,
-                                        result,
-                                    )
-                                ).to_dict(),
-                            )
-                        return
-
-                try:
-                    target = self.locate(message.address)
-
-                    getattr(target, f"add_{message.prop}_listener")(callback)
-
-                    self.listeners.append(
-                        Listener(client_id, target, message.prop, callback)
-                    )
-
-                    callback()
-
-                except Exception as error:
-                    self.server.send(
-                        client_id,
-                        (
-                            OutgoingMessage(
-                                Status.FAILURE,
-                                message.method,
-                                message.address,
-                                message.prop,
-                                str(error),
-                            )
-                        ).to_dict(),
-                    )
-                    return
             else:
+                self.server.send(
+                    client_id,
+                    OutgoingMessage(
+                        Status.FAILURE,
+                        message.method,
+                        message.address,
+                        message.prop,
+                        "Incorrect code",
+                    ).to_dict(),
+                )
+
+    def handleGet(self, message: IncomingMessage, client_id: int):
+        if message.address == "/pref":
+            if message.prop == "all":
+                value = json.dumps(self.control_surface.preferences.getAll())
+            else:
+                value = self.control_surface.preferences.get(message.prop)
+        else:
+            try:
+                value = getattr(self.locate(message.address), message.prop)
+            except AttributeError:
+                self.server.send(
+                    client_id,
+                    OutgoingMessage(
+                        Status.FAILURE,
+                        message.method,
+                        message.address,
+                        message.prop,
+                        "Property not found",
+                    ).to_dict(),
+                )
+
+        if value is not None:
+            self.server.send(
+                client_id,
+                OutgoingMessage(
+                    Status.SUCCESS,
+                    message.method,
+                    message.address,
+                    message.prop,
+                    value,
+                ).to_dict(),
+            )
+
+    def handleListen(self, message: IncomingMessage, client_id: int):
+        if (
+            len(
+                [
+                    listener
+                    for listener in self.listeners
+                    if listener.client == client_id and listener.prop == message.prop
+                ]
+            )
+            == 0
+        ):
+
+            def callback():
+                result = getattr(self.locate(message.address), message.prop)
+
+                if result is not None:
+                    try:
+                        self.server.send(
+                            client_id,
+                            (
+                                OutgoingMessage(
+                                    Status.SUCCESS,
+                                    message.method,
+                                    message.address,
+                                    message.prop,
+                                    result,
+                                )
+                            ).to_dict(),
+                        )
+                    except BrokenPipeError:
+                        self.server.send(
+                            client_id,
+                            (
+                                OutgoingMessage(
+                                    Status.SUCCESS,
+                                    message.method,
+                                    message.address,
+                                    message.prop,
+                                    result,
+                                )
+                            ).to_dict(),
+                        )
+                    return
+
+            try:
+                target = self.locate(message.address)
+
+                getattr(target, f"add_{message.prop}_listener")(callback)
+
+                self.listeners.append(
+                    Listener(client_id, target, message.prop, callback)
+                )
+
+                callback()
+
+            except Exception as error:
                 self.server.send(
                     client_id,
                     (
@@ -222,41 +232,73 @@ class Handler:
                             message.method,
                             message.address,
                             message.prop,
-                            "listener already exists",
+                            str(error),
                         )
                     ).to_dict(),
                 )
                 return
-
-        elif getattr(message, "method", None) == Method.UNLISTEN:
-            listener = first(
-                [
-                    listener
-                    for listener in self.listeners
-                    if listener.client == client_id and listener.prop == message.prop
-                ]
-            )
-
-            if listener is not None:
-                getattr(listener.target, f"remove_{listener.prop}_listener")(
-                    listener.callback
-                )
-
-                self.listeners.remove(listener)
+        else:
             self.server.send(
                 client_id,
                 (
                     OutgoingMessage(
-                        Status.SUCCESS,
+                        Status.FAILURE,
                         message.method,
                         message.address,
                         message.prop,
+                        "listener already exists",
                     )
                 ).to_dict(),
             )
             return
 
-        if self.client_codes.validate(client_id, message.code) is False:
+    def handleUnlisten(self, message: IncomingMessage, client_id: int):
+        listener = first(
+            [
+                listener
+                for listener in self.listeners
+                if listener.client == client_id and listener.prop == message.prop
+            ]
+        )
+
+        if listener is not None:
+            getattr(listener.target, f"remove_{listener.prop}_listener")(
+                listener.callback
+            )
+            self.listeners.remove(listener)
+
+        self.server.send(
+            client_id,
+            (
+                OutgoingMessage(
+                    Status.SUCCESS,
+                    message.method,
+                    message.address,
+                    message.prop,
+                )
+            ).to_dict(),
+        )
+
+    def handleCall(self, message: IncomingMessage, client_id: int):
+        try:
+            if message.value is not None:
+                result = getattr(self.locate(message.address), message.prop)(
+                    message.value
+                )
+            else:
+                result = getattr(self.locate(message.address), message.prop)()
+
+            self.server.send(
+                client_id,
+                OutgoingMessage(
+                    Status.SUCCESS,
+                    message.method,
+                    message.address,
+                    message.prop,
+                    result,
+                ).to_dict(),
+            )
+        except Exception as error:
             self.server.send(
                 client_id,
                 OutgoingMessage(
@@ -264,19 +306,21 @@ class Handler:
                     message.method,
                     message.address,
                     message.prop,
-                    "Not authorized",
+                    str(error),
                 ).to_dict(),
             )
-            return
 
-        if getattr(message, "method", None) == Method.CALL:
+    def handleSet(self, message: IncomingMessage, client_id: int):
+        if message.value is not None:
             try:
-                if message.value is not None:
-                    result = getattr(self.locate(message.address), message.prop)(
-                        message.value
-                    )
+                if message.address == "pref":
+                    self.control_surface.preferences.set(message.prop, message.value)
                 else:
-                    result = getattr(self.locate(message.address), message.prop)()
+                    setattr(
+                        self.locate(message.address),
+                        message.prop,
+                        message.value,
+                    )
 
                 self.server.send(
                     client_id,
@@ -285,9 +329,11 @@ class Handler:
                         message.method,
                         message.address,
                         message.prop,
-                        result,
+                        message.value,
                     ).to_dict(),
                 )
+                return
+
             except Exception as error:
                 self.server.send(
                     client_id,
@@ -301,57 +347,18 @@ class Handler:
                 )
                 return
 
-        elif getattr(message, "method", None) == Method.SET:
-            if message.value is not None:
-                try:
-                    if message.address == "pref":
-                        self.control_surface.preferences.set(
-                            message.prop, message.value
-                        )
-                    else:
-                        setattr(
-                            self.locate(message.address),
-                            message.prop,
-                            message.value,
-                        )
-
-                    self.server.send(
-                        client_id,
-                        OutgoingMessage(
-                            Status.SUCCESS,
-                            message.method,
-                            message.address,
-                            message.prop,
-                            message.value,
-                        ).to_dict(),
-                    )
-                    return
-
-                except Exception as error:
-                    self.server.send(
-                        client_id,
-                        OutgoingMessage(
-                            Status.FAILURE,
-                            message.method,
-                            message.address,
-                            message.prop,
-                            str(error),
-                        ).to_dict(),
-                    )
-                    return
-
-            else:
-                self.server.send(
-                    client_id,
-                    OutgoingMessage(
-                        Status.FAILURE,
-                        message.method,
-                        message.address,
-                        message.prop,
-                        "No value was given",
-                    ).to_dict(),
-                )
-                return
+        else:
+            self.server.send(
+                client_id,
+                OutgoingMessage(
+                    Status.FAILURE,
+                    message.method,
+                    message.address,
+                    message.prop,
+                    "No value was given",
+                ).to_dict(),
+            )
+            return
 
     def locate(self, address: str):
         location = self

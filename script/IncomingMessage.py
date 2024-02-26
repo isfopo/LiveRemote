@@ -68,8 +68,8 @@ class IncomingMessage:
 
     def to_dict(self):
         return {
-            "method": getattr(self, "method"),
-            "address": getattr(self, "address"),
-            "prop": getattr(self, "prop"),
-            "type": getattr(self, "type"),
+            "method": getattr(self, "method", None),
+            "address": getattr(self, "address", None),
+            "prop": getattr(self, "prop", None),
+            "type": getattr(self, "type", None),
         }
