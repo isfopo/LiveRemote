@@ -77,7 +77,7 @@ class Handler:
             )
         )
 
-        if message.method == Method.AUTH:
+        if getattr(message, "method", None) == Method.AUTH:
             if message.address == "code" and message.prop == "show":
                 self.control_surface.show_message(
                     f"Client secret is {self.client_codes.get(client_id)}"
@@ -109,7 +109,7 @@ class Handler:
                     )
                 return
 
-        elif message.method == Method.GET:
+        elif getattr(message, "method", None) == Method.GET:
             if message.address == "/pref":
                 if message.prop == "all":
                     value = json.dumps(self.control_surface.preferences.getAll())
@@ -143,7 +143,7 @@ class Handler:
                 )
                 return
 
-        elif message.method == Method.LISTEN:
+        elif getattr(message, "method", None) == Method.LISTEN:
             if (
                 len(
                     [
@@ -228,7 +228,7 @@ class Handler:
                 )
                 return
 
-        elif message.method == Method.UNLISTEN:
+        elif getattr(message, "method", None) == Method.UNLISTEN:
             listener = first(
                 [
                     listener
@@ -269,7 +269,7 @@ class Handler:
             )
             return
 
-        if message.method == Method.CALL:
+        if getattr(message, "method", None) == Method.CALL:
             try:
                 if message.value is not None:
                     result = getattr(self.locate(message.address), message.prop)(
@@ -301,7 +301,7 @@ class Handler:
                 )
                 return
 
-        elif message.method == Method.SET:
+        elif getattr(message, "method", None) == Method.SET:
             if message.value is not None:
                 try:
                     if message.address == "pref":
