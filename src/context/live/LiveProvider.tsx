@@ -13,6 +13,7 @@ export const initialState: LiveState = {
   song: {
     is_playing: 0,
     record_mode: 0,
+    tempo: undefined,
   },
 };
 

@@ -7,7 +7,7 @@ export type LiveState = {
 export type Song = {
   is_playing: number;
   record_mode: number;
-  tempo: number;
+  tempo: number | undefined;
 };
 
 export interface LiveActions {
