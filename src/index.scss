@@ -1,7 +1,7 @@
 :root {
   width: 100%;
   height: 100%;
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Raleway", system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -47,6 +47,35 @@ button {
   &:focus,
   &:focus-visible {
     outline: 4px auto -webkit-focus-ring-color;
+  }
+}
+
+.input {
+  width: 100%;
+  border-radius: 8px;
+  border-style: none;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  background-color: hsl(204 4% 10%);
+  color: hsl(204 20% 100%);
+  box-shadow: inset 0 0 0 1px rgba(255 255 255 / 0.12),
+    inset 0 -1px 0 0 rgba(255 255 255 / 0.05),
+    inset 0 2px 5px 0 rgba(0 0 0 / 0.15);
+
+  &::placeholder {
+    color: hsl(204 20% 100% / 46%);
+  }
+
+  &:hover {
+    background-color: hsl(204 4% 8%);
+  }
+
+  &:focus-visible,
+  &[data-focus-visible] {
+    outline: 2px solid #646cff;
+    outline-offset: -1px;
   }
 }
 
