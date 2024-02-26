@@ -72,7 +72,9 @@ class Handler:
         message = IncomingMessage(client_id, payload)
 
         self.control_surface.log_message(
-            "Client({client}) sent: {message}".format(client=client_id, message=message)
+            "Client({client}) sent: {message}".format(
+                client=client_id, message=message.to_dict()
+            )
         )
 
         if message.method == Method.AUTH:

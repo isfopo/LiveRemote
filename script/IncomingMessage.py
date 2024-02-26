@@ -65,3 +65,11 @@ class IncomingMessage:
                 return None
         except KeyError:
             return None
+
+    def to_dict(self):
+        return {
+            "method": getattr(self, "method"),
+            "address": getattr(self, "address"),
+            "prop": getattr(self, "prop"),
+            "type": getattr(self, "type"),
+        }
