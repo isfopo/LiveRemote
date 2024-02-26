@@ -1,10 +1,11 @@
-import socket
-import threading
-import json
 import base64
 import hashlib
+import json
+import socket
 import struct
-from typing import Any, Dict, Callable, Union
+import threading
+from typing import Any, Callable, Dict, Union
+
 from _Framework import ControlSurface
 
 PORT = 8000
@@ -23,9 +24,7 @@ class Server(threading.Thread):
         control_surface: ControlSurface.ControlSurface,
         port=PORT,
         on_connect: Union[Callable[[int], None], None] = None,
-        on_message: Union[
-            Callable[[int, Union[Any, None]], None], None
-        ] = None,
+        on_message: Union[Callable[[int, Union[Any, None]], None], None] = None,
         on_disconnect: Union[Callable[[int], None], None] = None,
     ):
         super().__init__()
@@ -104,9 +103,7 @@ class Server(threading.Thread):
                 if mask:
                     unmasked_data = bytearray()
                     for i in range(len(payload_data)):
-                        unmasked_data.append(
-                            payload_data[i] ^ masking_key[i % 4]
-                        )
+                        unmasked_data.append(payload_data[i] ^ masking_key[i % 4])
                     payload_data = unmasked_data
 
                 if self.on_message:
@@ -168,12 +165,12 @@ class Server(threading.Thread):
     def send(self, client_id: int, payload: dict) -> None:
         conn = self.clients.get(client_id)
 
+        self.control_surface.log_message("Sending: {}".format(payload))
+
         if conn:
             # Send the header and payload through the socket connection
             conn.sendall(
-                self.create_websocket_header(
-                    json.dumps(payload).encode("utf-8")
-                )
+                self.create_websocket_header(json.dumps(payload).encode("utf-8"))
             )
 
     def create_websocket_header(self, payload):
