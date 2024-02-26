@@ -1,3 +1,4 @@
+import { useLiveContext } from "../../../context/live/useLiveContext";
 import { OutgoingMessage } from "../../../types/socket";
 
 import { Widget } from "../Widget";
@@ -7,9 +8,15 @@ export interface TempoWidgetProps {
 }
 
 export const TempoWidget = ({ send }: TempoWidgetProps) => {
+  const {
+    state: {
+      song: { tempo },
+    },
+  } = useLiveContext();
+
   return (
     <Widget>
-      <p>Tempo</p>
+      <h3>{tempo?.toFixed(2)}</h3>
     </Widget>
   );
 };
