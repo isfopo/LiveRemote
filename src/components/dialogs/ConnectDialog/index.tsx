@@ -36,13 +36,13 @@ export const ConnectDialog = ({
 
   if (!host) {
     return (
-      <>
+      <Ariakit.Form store={form} className={styles.form}>
         <p>Connect to your set</p>
         <CandidateStack
           candidates={candidates}
           connect={(host) => connect(host)}
         />
-      </>
+      </Ariakit.Form>
     );
   }
 
