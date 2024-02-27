@@ -1,5 +1,6 @@
 import { useLiveContext } from "../../../context/live/useLiveContext";
 import { OutgoingMessage } from "../../../types/socket";
+import { Spinner } from "../../loaders/Spinner";
 
 import { Widget } from "../Widget";
 
@@ -13,6 +14,10 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
       song: { tempo },
     },
   } = useLiveContext();
+
+  if (!tempo) {
+    return <Spinner />;
+  }
 
   return (
     <Widget>
