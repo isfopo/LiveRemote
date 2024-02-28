@@ -1,6 +1,14 @@
-import { PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
 import styles from "./index.module.scss";
 
-export const Widget = ({ children }: PropsWithChildren) => {
-  return <div className={styles.container}>{children}</div>;
+export interface WidgetProps
+  extends PropsWithChildren,
+    React.HTMLAttributes<HTMLDivElement> {}
+
+export const Widget = ({ children, ...props }: WidgetProps) => {
+  return (
+    <div {...props} className={styles.container}>
+      {children}
+    </div>
+  );
 };
