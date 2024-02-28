@@ -80,7 +80,10 @@ class Handler:
         if getattr(message, "method", None) == Method.AUTH:
             self.handleAuth(message, client_id)
 
-        elif self.client_codes.validate(client_id, message.code) is False:
+        elif (
+            hasattr(message, "code")
+            and self.client_codes.validate(client_id, message.code) is False
+        ):
             self.server.send(
                 client_id,
                 OutgoingMessage(
@@ -312,15 +315,19 @@ class Handler:
 
     def handleSet(self, message: IncomingMessage, client_id: int):
         if message.value is not None:
+
+            def setter(message: IncomingMessage):
+                setattr(
+                    self.locate(message.address),
+                    message.prop,
+                    message.value,
+                )
+
             try:
                 if message.address == "pref":
                     self.control_surface.preferences.set(message.prop, message.value)
                 else:
-                    setattr(
-                        self.locate(message.address),
-                        message.prop,
-                        message.value,
-                    )
+                    self.control_surface.schedule_message(0, setter, message)
 
                 self.server.send(
                     client_id,
