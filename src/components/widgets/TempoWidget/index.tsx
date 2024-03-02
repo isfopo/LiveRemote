@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLiveContext } from "../../../context/live/useLiveContext";
 import { Method, OutgoingMessage } from "../../../types/socket";
 import { Spinner } from "../../loaders/Spinner";
@@ -17,12 +17,18 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
   } = useLiveContext();
 
   const [isClicked, setIsClicked] = useState<boolean>(false);
-  const [mouseLocation, setMouseLocation] = React.useState<MouseEvent>();
+  const mouseLocation = React.useRef<MouseEvent>();
+  const [_tempo, setTempo] = useState<number | undefined>(tempo);
+
+  // updates tempo when live context changes
+  useEffect(() => {
+    setTempo(tempo);
+  }, [tempo]);
 
   const handleMouseDown: React.MouseEventHandler<HTMLDivElement> = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       setIsClicked(true);
-      setMouseLocation(e.nativeEvent);
+      mouseLocation.current = e.nativeEvent;
     },
     []
   );
@@ -30,28 +36,32 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
   const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (isClicked && mouseLocation && tempo) {
-        send({
-          method: Method.SET,
-          address: "song",
-          prop: "tempo",
-          value:
-            tempo + (e.nativeEvent.clientX > mouseLocation?.clientX ? -1 : 1),
-          type: "float",
-        });
+        if (
+          mouseLocation.current?.screenY &&
+          e.nativeEvent.screenY >= mouseLocation.current?.screenY
+        ) {
+          setTempo((t) => t && t - 1);
+        } else {
+          setTempo((t) => t && t + 1);
+        }
       }
 
-      setMouseLocation(e.nativeEvent);
+      mouseLocation.current = e.nativeEvent;
     },
-    [mouseLocation, send, tempo, isClicked]
+    [tempo, isClicked]
   );
 
-  const handleMouseUp: React.MouseEventHandler<HTMLDivElement> = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseUp: React.MouseEventHandler<HTMLDivElement> =
+    useCallback(() => {
       setIsClicked(false);
-      setMouseLocation(e.nativeEvent);
-    },
-    []
-  );
+      send({
+        method: Method.SET,
+        address: "song",
+        prop: "tempo",
+        value: _tempo,
+        type: "float",
+      });
+    }, [_tempo, send]);
 
   if (!tempo) {
     return <Spinner />;
@@ -62,8 +72,9 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
     >
-      <h3>{tempo?.toFixed(2)}</h3>
+      <h3>{_tempo?.toFixed(2)}</h3>
     </Widget>
   );
 };
