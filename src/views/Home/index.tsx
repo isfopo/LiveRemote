@@ -1,3 +1,9 @@
+import { Button } from "../../components/buttons/Button";
+
 export const Home = () => {
-  return <p>Home page</p>;
+  const toRemote = () => {
+    window.location.href = "/remote";
+  };
+
+  return <Button onClick={toRemote}>Remote</Button>;
 };
