@@ -10,8 +10,8 @@
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"preview": "vite preview",
 		"install-script": "python3 runners/install.py --name LiveRemote",
-		"watch-live-logs": "python3 runners/watch.py --user 'isaacpoole' --version 'Live 11.3.21'",
-		"close-set": "pkill -x Ableton Live 11 Suite",
+		"watch-live-logs": "python3 runners/watch.py --user 'isaacpoole' --version 'Live 12.0'",
+		"close-set": "pkill -x Ableton Live 12 Suite",
 		"open-set": "open set/set.als",
 		"generate-pwa-assets": "pwa-assets-generator --preset minimal-2023 public/vite.svg"
 	},
