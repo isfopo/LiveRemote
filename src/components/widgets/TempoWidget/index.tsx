@@ -58,7 +58,7 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
           );
           shouldIncrease =
             !!mouseLocation.current?.screenY &&
-            e.nativeEvent.screenY <= mouseLocation.current?.screenY;
+            e.nativeEvent.screenY >= mouseLocation.current?.screenY;
         } else if (
           e.nativeEvent instanceof TouchEvent &&
           mouseLocation.current instanceof TouchEvent
@@ -73,7 +73,7 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
           );
           shouldIncrease =
             !!mouseLocation.current?.touches[0].screenY &&
-            e.nativeEvent.touches[0].screenY <=
+            e.nativeEvent.touches[0].screenY >=
               mouseLocation.current?.touches[0].screenY;
         }
 
