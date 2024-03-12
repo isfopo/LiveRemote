@@ -17,7 +17,7 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
   } = useLiveContext();
 
   const [isClicked, setIsClicked] = useState<boolean>(false);
-  const mouseLocation = React.useRef<MouseEvent>();
+  const mouseLocation = React.useRef<MouseEvent | TouchEvent>();
   const [_tempo, setTempo] = useState<number | undefined>(tempo);
 
   // updates tempo when live context changes
@@ -25,24 +25,64 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
     setTempo(tempo);
   }, [tempo]);
 
-  const handleMouseDown: React.MouseEventHandler<HTMLDivElement> = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseDown = useCallback(
+    (
+      e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+    ) => {
       setIsClicked(true);
       mouseLocation.current = e.nativeEvent;
     },
     []
   );
 
-  const handleMouseMove: React.MouseEventHandler<HTMLDivElement> = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (isClicked && mouseLocation && tempo) {
+  const handleMouseMove = useCallback(
+    (
+      e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+    ) => {
+      e.preventDefault();
+
+      let deltaX: number | null = null;
+      let deltaY: number | null = null;
+      let shouldIncrease: boolean | null = null;
+
+      if (isClicked && mouseLocation.current && tempo) {
         if (
-          mouseLocation.current?.screenY &&
-          e.nativeEvent.screenY >= mouseLocation.current?.screenY
+          e.nativeEvent instanceof MouseEvent &&
+          mouseLocation.current instanceof MouseEvent
         ) {
-          setTempo((t) => t && t - 1);
-        } else {
-          setTempo((t) => t && t + 1);
+          deltaX = Math.abs(
+            e.nativeEvent.screenX - mouseLocation.current.screenX
+          );
+          deltaY = Math.abs(
+            e.nativeEvent.screenY - mouseLocation.current.screenY
+          );
+          shouldIncrease =
+            !!mouseLocation.current?.screenY &&
+            e.nativeEvent.screenY <= mouseLocation.current?.screenY;
+        } else if (
+          e.nativeEvent instanceof TouchEvent &&
+          mouseLocation.current instanceof TouchEvent
+        ) {
+          deltaX = Math.abs(
+            e.nativeEvent.touches[0].screenX -
+              mouseLocation.current.touches[0].screenX
+          );
+          deltaY = Math.abs(
+            e.nativeEvent.touches[0].screenY -
+              mouseLocation.current.touches[0].screenY
+          );
+          shouldIncrease =
+            !!mouseLocation.current?.touches[0].screenY &&
+            e.nativeEvent.touches[0].screenY <=
+              mouseLocation.current?.touches[0].screenY;
+        }
+
+        if (!!deltaX && !!deltaY && deltaX < deltaY) {
+          if (shouldIncrease) {
+            setTempo((t) => t && t - 1);
+          } else {
+            setTempo((t) => t && t + 1);
+          }
         }
       }
 
@@ -51,17 +91,16 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
     [tempo, isClicked]
   );
 
-  const handleMouseUp: React.MouseEventHandler<HTMLDivElement> =
-    useCallback(() => {
-      setIsClicked(false);
-      send({
-        method: Method.SET,
-        address: "song",
-        prop: "tempo",
-        value: _tempo,
-        type: "float",
-      });
-    }, [_tempo, send]);
+  const handleMouseUp = useCallback(() => {
+    setIsClicked(false);
+    send({
+      method: Method.SET,
+      address: "song",
+      prop: "tempo",
+      value: _tempo,
+      type: "float",
+    });
+  }, [_tempo, send]);
 
   if (!tempo) {
     return <Spinner />;
@@ -73,6 +112,9 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
+      onTouchStart={handleMouseDown}
+      onTouchMove={handleMouseMove}
+      onTouchEnd={handleMouseUp}
     >
       <h3>{_tempo?.toFixed(2)}</h3>
     </Widget>
