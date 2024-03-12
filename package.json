@@ -17,6 +17,7 @@
 	},
 	"dependencies": {
 		"@ariakit/react": "^0.4.1",
+		"@use-gesture/react": "^10.3.0",
 		"lodash.set": "^4.3.2",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
