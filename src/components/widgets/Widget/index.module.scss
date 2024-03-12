@@ -4,4 +4,7 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
