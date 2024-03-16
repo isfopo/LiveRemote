@@ -1,6 +1,6 @@
-import { useDrag } from "@use-gesture/react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLiveContext } from "../../../context/live/useLiveContext";
+import { useDragControl } from "../../../hooks/useDragControl";
 import { Method, OutgoingMessage } from "../../../types/socket";
 import { Spinner } from "../../loaders/Spinner";
 import { Widget } from "../Widget";
@@ -21,7 +21,6 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
     },
   } = useLiveContext();
 
-  const mouseLocation = React.useRef<Location | undefined>();
   const [_tempo, setTempo] = useState<number | undefined>(tempo);
 
   // updates tempo when live context changes
@@ -29,31 +28,10 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
     setTempo(tempo);
   }, [tempo]);
 
-  const bind = useDrag(({ movement: [x, y], last }) => {
-    if (mouseLocation.current === undefined) {
-      mouseLocation.current = {
-        x,
-        y,
-      };
-    } else {
-      const deltaX = Math.abs(x - mouseLocation.current?.x);
-      const deltaY = Math.abs(y - mouseLocation.current?.y);
-
-      if (deltaX < deltaY) {
-        if (!!mouseLocation.current?.x && y >= mouseLocation.current?.y) {
-          setTempo((t) => t && t - 1);
-        } else {
-          setTempo((t) => t && t + 1);
-        }
-      }
-
-      mouseLocation.current = {
-        x,
-        y,
-      };
-    }
-
-    if (last) {
+  const { bind } = useDragControl({
+    onIncrease: () => setTempo((t) => t && t + 1),
+    onDecrease: () => setTempo((t) => t && t - 1),
+    onDragEnd: () => {
       send({
         method: Method.SET,
         address: "song",
@@ -61,7 +39,7 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
         value: _tempo,
         type: "float",
       });
-    }
+    },
   });
 
   if (!tempo) {
