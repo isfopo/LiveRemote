@@ -33,14 +33,7 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
         width={1200}
       >
         {widgets.map(({ id, component }) => (
-          <div
-            className={`${styles.widget} ${
-              mode === Mode.EDIT ? styles.edit : ""
-            }`}
-            key={id}
-          >
-            {component}
-          </div>
+          <div key={id}>{component}</div>
         ))}
       </GridLayout>
       <div className={styles.actions}>
