@@ -10,12 +10,16 @@ export interface useDragControlOptions {
   onIncrease: () => void;
   onDecrease: () => void;
   onDragEnd: () => void;
+  direction?: "x" | "y";
+  disabled?: boolean;
 }
 
 export const useDragControl = ({
   onIncrease,
   onDecrease,
   onDragEnd,
+  direction = "y",
+  disabled = false,
 }: useDragControlOptions) => {
   const mouseLocation = React.useRef<Location | undefined>();
 
@@ -29,11 +33,11 @@ export const useDragControl = ({
       const deltaX = Math.abs(x - mouseLocation.current?.x);
       const deltaY = Math.abs(y - mouseLocation.current?.y);
 
-      if (deltaX < deltaY) {
+      if (direction === "y" ? deltaX < deltaY : deltaY < deltaX) {
         if (!!mouseLocation.current?.x && y >= mouseLocation.current?.y) {
-          onDecrease();
+          !disabled && onDecrease();
         } else {
-          onIncrease();
+          !disabled && onIncrease();
         }
       }
 
@@ -44,7 +48,7 @@ export const useDragControl = ({
     }
 
     if (last) {
-      onDragEnd();
+      !disabled && onDragEnd();
     }
   });
 
