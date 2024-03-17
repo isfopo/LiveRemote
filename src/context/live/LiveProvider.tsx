@@ -13,6 +13,7 @@ export const initialState: LiveState = {
   song: {
     is_playing: 0,
     record_mode: 0,
+    tempo: undefined,
   },
 };
 
@@ -31,6 +32,10 @@ const liveReducer: Reducer<LiveState, IActions<LiveActions>> = (
   switch (type) {
     case "update": {
       const updated: LiveState = { ...state };
+
+      if (payload.result === null) {
+        return state;
+      }
 
       set(
         updated,

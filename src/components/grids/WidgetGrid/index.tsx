@@ -1,7 +1,8 @@
 import GridLayout from "react-grid-layout";
 
-import { useState } from "react";
 import { FaEdit as Edit } from "react-icons/fa";
+import { Mode } from "../../../context/mode/types";
+import { useModeContext } from "../../../context/mode/useModeContext";
 import { useWidgetLayout } from "../../../hooks/useWidgetLayout";
 import { OutgoingMessage } from "../../../types/socket";
 import { IconButton } from "../../buttons/IconButton";
@@ -12,7 +13,11 @@ export interface WidgetGridProps {
 }
 
 export const WidgetGrid = ({ send }: WidgetGridProps) => {
-  const [edit, setEdit] = useState<boolean>(false);
+  const {
+    dispatch,
+    state: { mode },
+  } = useModeContext();
+
   const { widgets, layout, onLayoutChange } = useWidgetLayout({ send });
 
   return (
@@ -21,23 +26,26 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
         className={styles.grid}
         layout={layout}
         onLayoutChange={onLayoutChange}
-        isDraggable={edit}
+        isDraggable={mode === Mode.EDIT}
         cols={12}
         rowHeight={40}
         margin={[4, 4]}
         width={1200}
       >
         {widgets.map(({ id, component }) => (
-          <div
-            className={`${styles.widget} ${edit ? styles.edit : ""}`}
-            key={id}
-          >
-            {component}
-          </div>
+          <div key={id}>{component}</div>
         ))}
       </GridLayout>
       <div className={styles.actions}>
-        <IconButton size="small" onClick={() => setEdit(!edit)}>
+        <IconButton
+          size="small"
+          onClick={() =>
+            dispatch({
+              type: "update",
+              payload: mode === Mode.EDIT ? Mode.REMOTE : Mode.EDIT,
+            })
+          }
+        >
           <Edit />
         </IconButton>
       </div>

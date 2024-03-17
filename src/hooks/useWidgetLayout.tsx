@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import GridLayout from "react-grid-layout";
+import { TempoWidget } from "../components/widgets/TempoWidget";
 import { TransportWidget } from "../components/widgets/TransportWidget";
 import { getFromLocalStorage, setInLocalStorage } from "../helpers/storage";
 import { Method, OutgoingMessage } from "../types/socket";
@@ -21,6 +22,7 @@ export interface UseWidgetLayoutOptions {
 
 const defaultLayout = getFromLocalStorage<GridLayout.Layout[]>("layout") || [
   { i: "transport", x: 0, y: 0, w: 3, h: 2 },
+  { i: "tempo", x: 4, y: 1, w: 1, h: 2 },
 ];
 
 export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
@@ -41,6 +43,16 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
             {
               address: "song",
               prop: "record_mode",
+            },
+          ],
+        },
+        {
+          id: "tempo",
+          component: <TempoWidget send={send} />,
+          listeners: [
+            {
+              address: "song",
+              prop: "tempo",
             },
           ],
         },

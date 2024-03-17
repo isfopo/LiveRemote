@@ -4,4 +4,14 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.edit {
+  background-color: rgba(255, 255, 255, 0.2);
+  cursor: grab;
 }

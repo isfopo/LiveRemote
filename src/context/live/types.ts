@@ -1,15 +1,16 @@
 import { IncomingMessage } from "../../types/socket";
 
 export type LiveState = {
-	song: Song;
+  song: Song;
 };
 
 export type Song = {
-	is_playing: number;
-	record_mode: number;
+  is_playing: number;
+  record_mode: number;
+  tempo: number | undefined;
 };
 
 export interface LiveActions {
-	update: IncomingMessage;
-	reset: null;
+  update: IncomingMessage;
+  reset: null;
 }
