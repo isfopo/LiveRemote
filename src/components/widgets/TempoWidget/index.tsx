@@ -33,6 +33,7 @@ export const TempoWidget = ({
 
   // updates tempo when live context changes
   useEffect(() => {
+    console.log("tempo", tempo);
     setTempo(tempo);
   }, [tempo]);
 

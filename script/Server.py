@@ -169,9 +169,12 @@ class Server(threading.Thread):
 
         if conn:
             # Send the header and payload through the socket connection
-            conn.sendall(
-                self.create_websocket_header(json.dumps(payload).encode("utf-8"))
-            )
+            try:
+                conn.sendall(
+                    self.create_websocket_header(json.dumps(payload).encode("utf-8"))
+                )
+            except BrokenPipeError:
+                self.control_surface.log_message("BrokenPipeError")
 
     def create_websocket_header(self, payload):
         header = bytearray()
