@@ -1,5 +1,7 @@
 import { useDrag } from "@use-gesture/react";
 import React from "react";
+import { Mode } from "../context/mode/types";
+import { useModeContext } from "../context/mode/useModeContext";
 
 export interface Location {
   x: number;
@@ -23,7 +25,15 @@ export const useDragControl = ({
 }: useDragControlOptions) => {
   const mouseLocation = React.useRef<Location | undefined>();
 
+  const {
+    state: { mode },
+  } = useModeContext();
+
   const bind = useDrag(({ movement: [x, y], last }) => {
+    if (mode === Mode.EDIT) {
+      return;
+    }
+
     if (mouseLocation.current === undefined) {
       mouseLocation.current = {
         x,
