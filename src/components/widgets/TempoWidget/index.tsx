@@ -12,9 +12,17 @@ export interface Location {
 
 export interface TempoWidgetProps {
   send: (message: OutgoingMessage) => void;
+  min?: number;
+  max?: number;
+  step?: number;
 }
 
-export const TempoWidget = ({ send }: TempoWidgetProps) => {
+export const TempoWidget = ({
+  send,
+  min = 20,
+  max = 999,
+  step = 1,
+}: TempoWidgetProps) => {
   const {
     state: {
       song: { tempo },
@@ -29,8 +37,8 @@ export const TempoWidget = ({ send }: TempoWidgetProps) => {
   }, [tempo]);
 
   const { bind } = useDragControl({
-    onIncrease: () => setTempo((t) => t && t + 1),
-    onDecrease: () => setTempo((t) => t && t - 1),
+    onIncrease: () => setTempo((t) => (t && t < max ? t + step : t)),
+    onDecrease: () => setTempo((t) => (t && t > min ? t - step : t)),
     onDragEnd: () => {
       send({
         method: Method.SET,
