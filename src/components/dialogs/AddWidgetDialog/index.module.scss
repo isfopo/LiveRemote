@@ -1,0 +1,12 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.option {
+  background: none;
+  border: none;
+}

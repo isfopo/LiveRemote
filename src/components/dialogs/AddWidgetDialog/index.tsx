@@ -1,5 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { WidgetMap } from "../../../hooks/useWidgetLayout";
+import styles from "./index.module.scss";
 
 export interface AddWidgetDialogProps {
   availableWidgets: WidgetMap[];
@@ -11,9 +12,14 @@ export const AddWidgetDialog = ({
   onAdd,
 }: AddWidgetDialogProps) => {
   return (
-    <Ariakit.Group>
+    <Ariakit.Group className={styles.group}>
       {availableWidgets.map((widget) => (
-        <button key={widget.id} type="button" onClick={() => onAdd(widget)}>
+        <button
+          className={styles.option}
+          key={widget.id}
+          type="button"
+          onClick={() => onAdd(widget)}
+        >
           {widget.id}
         </button>
       ))}
