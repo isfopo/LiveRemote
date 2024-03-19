@@ -47,7 +47,7 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
           },
         ],
         description: "Handles playback and recording",
-        w: 3,
+        w: 2,
         h: 2,
       },
       {
