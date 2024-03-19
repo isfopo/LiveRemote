@@ -47,6 +47,7 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
         rowHeight={40}
         margin={[4, 4]}
         width={1200}
+        compactType={null}
       >
         {widgets.map(({ id, component }) => (
           <div key={id}>{component}</div>
