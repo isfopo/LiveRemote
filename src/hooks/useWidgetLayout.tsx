@@ -125,20 +125,13 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
   );
 
   /**
-   * Removes a widget from the layout based on the provided id.
+   * Clears the layout.
    *
-   * @param {string} id - the id of the widget to be removed
    * @return {void}
    */
-  const removeWidget = useCallback(
-    (id: string): void => {
-      layout.splice(
-        layout.findIndex(({ i }) => i === id),
-        1
-      );
-    },
-    [layout]
-  );
+  const clearLayout = useCallback((): void => {
+    setLayout([]);
+  }, [layout]);
 
   return {
     widgets,
@@ -146,6 +139,6 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
     layout,
     onLayoutChange,
     addWidget,
-    removeWidget,
+    clearLayout,
   };
 };

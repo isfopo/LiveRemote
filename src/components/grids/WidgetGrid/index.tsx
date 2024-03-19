@@ -1,5 +1,9 @@
 import GridLayout from "react-grid-layout";
-import { FaPlus as Add, FaEdit as Edit } from "react-icons/fa";
+import {
+  FaPlus as Add,
+  FaTrashAlt as Clear,
+  FaEdit as Edit,
+} from "react-icons/fa";
 import { useDialogContext } from "../../../context/dialog/useDialogContext";
 import { Mode } from "../../../context/mode/types";
 import { useModeContext } from "../../../context/mode/useModeContext";
@@ -21,10 +25,16 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
 
   const { dispatch: dialogDispatch } = useDialogContext();
 
-  const { widgets, availableWidgets, layout, onLayoutChange, addWidget } =
-    useWidgetLayout({
-      send,
-    });
+  const {
+    widgets,
+    availableWidgets,
+    layout,
+    onLayoutChange,
+    addWidget,
+    clearLayout,
+  } = useWidgetLayout({
+    send,
+  });
 
   return (
     <>
@@ -72,6 +82,9 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
           }
         >
           <Edit />
+        </IconButton>
+        <IconButton size="small" onClick={clearLayout}>
+          <Clear />
         </IconButton>
       </div>
     </>
