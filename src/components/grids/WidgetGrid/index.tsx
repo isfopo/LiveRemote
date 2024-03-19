@@ -48,6 +48,7 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
         margin={[4, 4]}
         width={1200}
         compactType={null}
+        preventCollision={true}
       >
         {widgets.map(({ id, component }) => (
           <div key={id}>{component}</div>
