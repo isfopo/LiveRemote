@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import GridLayout from "react-grid-layout";
 import { TempoWidget } from "../components/widgets/TempoWidget";
 import { TransportWidget } from "../components/widgets/TransportWidget";
@@ -12,18 +12,19 @@ export interface Listener {
 
 export interface WidgetMap {
   id: string;
+  title: string;
   component: React.ReactNode;
   listeners: Listener[];
+  description: string;
+  w: number;
+  h: number;
 }
 
 export interface UseWidgetLayoutOptions {
   send: (message: OutgoingMessage) => void;
 }
 
-const defaultLayout = getFromLocalStorage<GridLayout.Layout[]>("layout") || [
-  { i: "transport", x: 0, y: 0, w: 3, h: 2 },
-  { i: "tempo", x: 4, y: 1, w: 1, h: 2 },
-];
+const defaultLayout = getFromLocalStorage<GridLayout.Layout[]>("layout") || [];
 
 export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
   const [layout, setLayout] =
@@ -33,6 +34,7 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
     () => [
       {
         id: "transport",
+        title: "Transport",
         component: <TransportWidget send={send} />,
         listeners: [
           {
@@ -44,9 +46,13 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
             prop: "record_mode",
           },
         ],
+        description: "Handles playback and recording",
+        w: 3,
+        h: 2,
       },
       {
         id: "tempo",
+        title: "Tempo",
         component: <TempoWidget send={send} />,
         listeners: [
           {
@@ -54,6 +60,9 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
             prop: "tempo",
           },
         ],
+        description: "Sets the tempo of the song",
+        w: 1,
+        h: 1,
       },
     ],
     [send, layout]
@@ -108,9 +117,12 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
    * @param {WidgetMap} widget - the widget to be added
    * @return {void}
    */
-  const addWidget = (widget: WidgetMap): void => {
-    layout.push({ i: widget.id, x: 3, y: 0, w: 3, h: 2 });
-  };
+  const addWidget = useCallback(
+    ({ id, w, h }: WidgetMap): void => {
+      setLayout([...layout, { i: id, x: 0, y: 0, w, h }]);
+    },
+    [layout]
+  );
 
   /**
    * Removes a widget from the layout based on the provided id.
@@ -118,12 +130,15 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
    * @param {string} id - the id of the widget to be removed
    * @return {void}
    */
-  const removeWidget = (id: string): void => {
-    layout.splice(
-      layout.findIndex(({ i }) => i === id),
-      1
-    );
-  };
+  const removeWidget = useCallback(
+    (id: string): void => {
+      layout.splice(
+        layout.findIndex(({ i }) => i === id),
+        1
+      );
+    },
+    [layout]
+  );
 
   return {
     widgets,
