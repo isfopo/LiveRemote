@@ -29,34 +29,41 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
   const [layout, setLayout] =
     React.useState<GridLayout.Layout[]>(defaultLayout);
 
+  const availableWidgets = useMemo<WidgetMap[]>(
+    () => [
+      {
+        id: "transport",
+        component: <TransportWidget send={send} />,
+        listeners: [
+          {
+            address: "song",
+            prop: "is_playing",
+          },
+          {
+            address: "song",
+            prop: "record_mode",
+          },
+        ],
+      },
+      {
+        id: "tempo",
+        component: <TempoWidget send={send} />,
+        listeners: [
+          {
+            address: "song",
+            prop: "tempo",
+          },
+        ],
+      },
+    ],
+    [send, layout]
+  );
+
   const widgets = useMemo<WidgetMap[]>(
     () =>
-      [
-        {
-          id: "transport",
-          component: <TransportWidget send={send} />,
-          listeners: [
-            {
-              address: "song",
-              prop: "is_playing",
-            },
-            {
-              address: "song",
-              prop: "record_mode",
-            },
-          ],
-        },
-        {
-          id: "tempo",
-          component: <TempoWidget send={send} />,
-          listeners: [
-            {
-              address: "song",
-              prop: "tempo",
-            },
-          ],
-        },
-      ].filter(({ id }) => layout.some(({ i }) => i === id)),
+      [...availableWidgets].filter(({ id }) =>
+        layout.some(({ i }) => i === id)
+      ),
     [send, layout]
   );
 
@@ -90,7 +97,7 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
    * @param {GridLayout.Layout[]} newLayout - the new layout to be set
    * @return {void}
    */
-  const onLayoutChange = (newLayout: GridLayout.Layout[]) => {
+  const onLayoutChange = (newLayout: GridLayout.Layout[]): void => {
     setLayout(newLayout);
     setInLocalStorage<GridLayout.Layout[]>("layout", newLayout);
   };
@@ -118,5 +125,12 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
     );
   };
 
-  return { widgets, layout, onLayoutChange, addWidget, removeWidget };
+  return {
+    widgets,
+    availableWidgets,
+    layout,
+    onLayoutChange,
+    addWidget,
+    removeWidget,
+  };
 };

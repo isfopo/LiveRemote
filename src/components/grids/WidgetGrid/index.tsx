@@ -1,11 +1,12 @@
 import GridLayout from "react-grid-layout";
-
-import { FaEdit as Edit } from "react-icons/fa";
+import { FaPlus as Add, FaEdit as Edit } from "react-icons/fa";
+import { useDialogContext } from "../../../context/dialog/useDialogContext";
 import { Mode } from "../../../context/mode/types";
 import { useModeContext } from "../../../context/mode/useModeContext";
 import { useWidgetLayout } from "../../../hooks/useWidgetLayout";
 import { OutgoingMessage } from "../../../types/socket";
 import { IconButton } from "../../buttons/IconButton";
+import { AddWidgetDialog } from "../../dialogs/AddWidgetDialog";
 import styles from "./index.module.scss";
 
 export interface WidgetGridProps {
@@ -14,11 +15,16 @@ export interface WidgetGridProps {
 
 export const WidgetGrid = ({ send }: WidgetGridProps) => {
   const {
-    dispatch,
+    dispatch: modeDispatch,
     state: { mode },
   } = useModeContext();
 
-  const { widgets, layout, onLayoutChange } = useWidgetLayout({ send });
+  const { dispatch: dialogDispatch } = useDialogContext();
+
+  const { widgets, availableWidgets, layout, onLayoutChange, addWidget } =
+    useWidgetLayout({
+      send,
+    });
 
   return (
     <>
@@ -40,7 +46,26 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
         <IconButton
           size="small"
           onClick={() =>
-            dispatch({
+            dialogDispatch({
+              type: "open",
+              payload: {
+                id: "add-widget",
+                component: (
+                  <AddWidgetDialog
+                    availableWidgets={availableWidgets}
+                    onAdd={addWidget}
+                  />
+                ),
+              },
+            })
+          }
+        >
+          <Add />
+        </IconButton>
+        <IconButton
+          size="small"
+          onClick={() =>
+            modeDispatch({
               type: "update",
               payload: mode === Mode.EDIT ? Mode.REMOTE : Mode.EDIT,
             })
