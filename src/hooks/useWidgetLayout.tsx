@@ -65,7 +65,7 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
         h: 1,
       },
     ],
-    [send, layout]
+    [send]
   );
 
   const widgets = useMemo<WidgetMap[]>(
@@ -73,7 +73,7 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
       [...availableWidgets].filter(({ id }) =>
         layout.some(({ i }) => i === id)
       ),
-    [send, layout]
+    [layout, availableWidgets]
   );
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
    */
   const clearLayout = useCallback((): void => {
     setLayout([]);
-  }, [layout]);
+  }, []);
 
   return {
     widgets,
