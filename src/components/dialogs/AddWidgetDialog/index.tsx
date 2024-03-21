@@ -20,8 +20,14 @@ export const AddWidgetDialog = ({
           type="button"
           onClick={() => onAdd(widget)}
         >
-          <p>{widget.title}</p>
-          <small>{widget.description}</small>
+          <div className={styles.icon}>
+            <widget.icon />
+          </div>
+
+          <div>
+            <p>{widget.title}</p>
+            <small>{widget.description}</small>
+          </div>
         </button>
       ))}
     </Ariakit.Group>

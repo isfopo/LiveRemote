@@ -1,5 +1,8 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import GridLayout from "react-grid-layout";
+import { IconType } from "react-icons";
+import { FaPlay as Play } from "react-icons/fa";
+import { PiMetronomeFill as Tempo } from "react-icons/pi";
 import { TempoWidget } from "../components/widgets/TempoWidget";
 import { TransportWidget } from "../components/widgets/TransportWidget";
 import { getFromLocalStorage, setInLocalStorage } from "../helpers/storage";
@@ -13,6 +16,7 @@ export interface Listener {
 export interface WidgetMap {
   id: string;
   title: string;
+  icon: IconType;
   component: React.ReactNode;
   listeners: Listener[];
   description: string;
@@ -35,6 +39,7 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
       {
         id: "transport",
         title: "Transport",
+        icon: Play,
         component: <TransportWidget send={send} />,
         listeners: [
           {
@@ -53,6 +58,7 @@ export const useWidgetLayout = ({ send }: UseWidgetLayoutOptions) => {
       {
         id: "tempo",
         title: "Tempo",
+        icon: Tempo,
         component: <TempoWidget send={send} />,
         listeners: [
           {
