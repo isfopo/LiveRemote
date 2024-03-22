@@ -62,6 +62,7 @@ export const WidgetGrid = ({ send }: WidgetGridProps) => {
               type: "open",
               payload: {
                 id: "add-widget",
+                title: "Add Widget",
                 component: (
                   <AddWidgetDialog
                     availableWidgets={availableWidgets}

@@ -19,8 +19,11 @@ export const DialogManager = () => {
         onClose={handleClose}
         backdrop={<div className={styles.backdrop} />}
       >
-        <Ariakit.DialogDismiss className={styles.dismiss} />
+        <Ariakit.DialogHeading className={styles.heading}>
+          {state.activeDialog?.title}
+        </Ariakit.DialogHeading>
 
+        <Ariakit.DialogDismiss className={styles.dismiss} />
         {state.activeDialog?.component}
       </Ariakit.Dialog>
     );
